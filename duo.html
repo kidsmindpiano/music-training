@@ -1534,8 +1534,8 @@ function tapUp() {
 
   // 판정
   if (pressTimeDiff < 0.8) { // 0.8초 이내에 눌렀으면 해당 음표에 대한 판정
-    if (holdPct >= 0.75) { note.result='perfect'; tapState.perfect++; playCorrectSfx(); }
-    else if (holdPct >= 0.4) { note.result='good'; tapState.good++; playCorrectSfx(); }
+    if (holdPct >= 0.65) { note.result='perfect'; tapState.perfect++; playCorrectSfx(); }
+    else if (holdPct >= 0.35) { note.result='good'; tapState.good++; playCorrectSfx(); }
     else { note.result='miss'; tapState.miss++; playWrongSfx(); }
     tapState.currentIdx++;
   }
@@ -1640,7 +1640,7 @@ function renderScrolling() {
       const holdDur = performance.now() - pressStart;
       const required = note.beat * BPM_MS;
       const pct = Math.min(1, holdDur / required);
-      const col = pct>=0.75 ? '#6bcb77' : pct>=0.4 ? '#D4C255' : '#F5B5B0';
+      const col = pct>=0.65 ? '#6bcb77' : pct>=0.35 ? '#D4C255' : '#F5B5B0';
       ctx.fillStyle = col;
       ctx.beginPath(); ctx.roundRect(noteX, barY, (noteW-4)*pct, barH, 4); ctx.fill();
     }
