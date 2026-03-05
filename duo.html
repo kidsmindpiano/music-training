@@ -1488,10 +1488,9 @@ function tapDown() {
   el.style.background = 'linear-gradient(135deg,#e08080,#d06060)';
   el.textContent = '🎵 누르는 중...';
 
-  // 소리
+  // 소리 — 같은 음으로 통일
   ensureTone().then(()=>{
-    const noteNames=['C4','E4','G4','C5'];
-    synth.triggerAttack(noteNames[tapState.currentIdx % noteNames.length]);
+    synth.triggerAttack('C4');
   });
 }
 
