@@ -1488,16 +1488,20 @@ function tapDown() {
   el.style.background = 'linear-gradient(135deg,#e08080,#d06060)';
   el.textContent = '🎵 누르는 중...';
 
-  // 소리 — 같은 음으로 통일
+  // 드럼 타격음
   ensureTone().then(()=>{
-    synth.triggerAttack('C4');
+    const drum = new Tone.MembraneSynth({
+      pitchDecay:0.01, octaves:4, envelope:{attack:0.001,decay:0.2,sustain:0,release:0.1}
+    }).toDestination();
+    drum.volume.value = -4;
+    drum.triggerAttackRelease('C2','8n');
+    setTimeout(()=>drum.dispose(),400);
   });
 }
 
 function tapUp() {
   if (!tapState || !tapState.pressing) return;
   tapState.pressing = false;
-  ensureTone().then(()=>synth.triggerRelease());
 
   const el = document.getElementById('tap-area');
   el.style.transform=''; el.style.background='';
