@@ -388,7 +388,7 @@ function renderCards() {
 
     let backContent = '';
     if (card.type === 'staff') {
-      backContent = `<canvas width="160" height="100" id="card-canvas-${idx}" style="width:140px;height:88px"></canvas><div class="card-label">이 음은?</div>`;
+      backContent = `<canvas width="160" height="100" id="card-canvas-${idx}" style="width:140px;height:88px"></canvas>`;
     } else if (card.type === 'text') {
       backContent = `<div class="card-content" style="font-size:32px;color:${card.color}">${card.display}</div>`;
     } else if (card.type === 'rhythm-symbol') {
