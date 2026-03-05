@@ -1429,7 +1429,9 @@ function initTap(q) {
   }
 
   const HITX = 200; // 판정선 X (가운데)
-  const PX_PER_BEAT = 50; // 1박당 픽셀 폭 (느리게)
+  const TRAVEL_BEATS = 4; // 오른쪽 끝→판정선까지 4박
+  const TRAVEL_PX = 400 - HITX; // 200px
+  const PX_PER_BEAT = TRAVEL_PX / TRAVEL_BEATS; // 50px/beat
   const SCROLL_SPEED = PX_PER_BEAT / (BPM_MS/1000); // px/sec
 
   tapState = {
@@ -1444,9 +1446,9 @@ function initTap(q) {
   el.onmousedown = el.ontouchstart = (e)=>{ e.preventDefault(); tapDown(); };
   el.onmouseup = el.onmouseleave = el.ontouchend = el.ontouchcancel = (e)=>{ e.preventDefault(); tapUp(); };
 
-  // 메트로놈 카운트다운 후 시작
+  // 예비박 4박 + 이동 4박 = 총 8박 후 첫 음표 도착
   const statusEl = document.getElementById('tap-status');
-  let count = 3;
+  let count = 4;
   statusEl.textContent = `준비... ${count}`;
   playMetronome();
   const cdi = setInterval(()=>{
