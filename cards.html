@@ -239,24 +239,26 @@ function drawNoteOnCanvas(canvas, noteStr) {
   const ctx = canvas.getContext('2d');
   const w = canvas.width, h = canvas.height;
   ctx.clearRect(0,0,w,h);
-  // mini staff
-  ctx.strokeStyle='#aaa'; ctx.lineWidth=1.5;
-  const top=10, gap=9;
-  for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(8,top+i*gap);ctx.lineTo(w-8,top+i*gap);ctx.stroke();}
+
+  // 오선 (첫째줄 = 미E4)
+  const top = 20, gap = 12;
+  ctx.strokeStyle='#aaa'; ctx.lineWidth=1.2;
+  for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(12,top+i*gap);ctx.lineTo(w-12,top+i*gap);ctx.stroke();}
   // 높은음자리표
-  ctx.font='36px serif'; ctx.fillStyle='#6A9FC5';
-  ctx.fillText('𝄞',2,top+3.5*gap);
-  // note position
-  const yMap={C4:top+5*gap,D4:top+4.5*gap,E4:top+4*gap,F4:top+3.5*gap,G4:top+3*gap,A4:top+2.5*gap,B4:top+2*gap};
-  const y=yMap[noteStr]||top+3*gap;
-  const cx=w/2+10;
-  // ledger line for C4
-  if(noteStr==='C4'){ctx.beginPath();ctx.moveTo(cx-14,top+5*gap);ctx.lineTo(cx+14,top+5*gap);ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.stroke();}
-  // note head
+  ctx.font='42px serif'; ctx.fillStyle='#6A9FC5';
+  ctx.fillText('𝄞', 6, top+3.2*gap);
+  // 정확한 위치 (첫째줄=top+4*gap=E4)
+  const line1 = top + 4*gap;
+  const yMap={C4:line1+gap*1.5, D4:line1+gap, E4:line1, F4:line1-gap*0.5, G4:line1-gap, A4:line1-gap*1.5, B4:line1-gap*2};
+  const y=yMap[noteStr]||line1-gap;
+  const cx=w/2+14;
+  // 덧줄 C4
+  if(noteStr==='C4'){ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx-16,line1+gap*1.5);ctx.lineTo(cx+16,line1+gap*1.5);ctx.stroke();}
+  // 음표 머리
   ctx.fillStyle='#333';
-  ctx.beginPath();ctx.ellipse(cx,y,9,6,-0.2,0,Math.PI*2);ctx.fill();
-  // stem
-  ctx.strokeStyle='#333';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx+8,y);ctx.lineTo(cx+8,y-24);ctx.stroke();
+  ctx.beginPath();ctx.ellipse(cx,y,10,7,-0.2,0,Math.PI*2);ctx.fill();
+  // 줄기
+  ctx.strokeStyle='#333';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx+9,y);ctx.lineTo(cx+9,y-28);ctx.stroke();
 }
 
 // ===== CARD GENERATION =====
@@ -386,7 +388,7 @@ function renderCards() {
 
     let backContent = '';
     if (card.type === 'staff') {
-      backContent = `<canvas width="140" height="70" id="card-canvas-${idx}" style="width:95%;height:70px"></canvas><div class="card-label">이 음은?</div>`;
+      backContent = `<canvas width="160" height="100" id="card-canvas-${idx}" style="width:140px;height:88px"></canvas><div class="card-label">이 음은?</div>`;
     } else if (card.type === 'text') {
       backContent = `<div class="card-content" style="font-size:32px;color:${card.color}">${card.display}</div>`;
     } else if (card.type === 'rhythm-symbol') {
