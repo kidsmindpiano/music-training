@@ -1102,7 +1102,7 @@ function showQuestion() {
 // ============================================================
 // DRAW
 // ============================================================
-function noteY(n) { return{C4:95,D4:87,E4:79,F4:71,G4:63,A4:55,B4:47}[n]||63; }
+function noteY(n) { return{C4:110,D4:102,E4:95,F4:88,G4:80,A4:73,B4:65}[n]||80; }
 
 function drawStaffQ(q) {
   const c = document.getElementById('q-canvas'); if(!c) return;
@@ -1121,7 +1121,7 @@ function drawStaffQ(q) {
   ctx.beginPath(); ctx.ellipse(x,y,11,8,-0.2,0,Math.PI*2); ctx.fill();
   ctx.strokeStyle='#333'; ctx.lineWidth=2;
   ctx.beginPath(); ctx.moveTo(x+10,y); ctx.lineTo(x+10,y-35); ctx.stroke();
-  if(freq==='C4'){ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-16,95);ctx.lineTo(x+16,95);ctx.stroke();}
+  if(freq==='C4'){ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-16,110);ctx.lineTo(x+16,110);ctx.stroke();}
 }
 
 function drawMelodyQ(q) {
@@ -1146,7 +1146,7 @@ function drawMelodyQ(q) {
       ctx.beginPath(); ctx.ellipse(x,y,10,7,-0.2,0,Math.PI*2); ctx.fill();
       ctx.strokeStyle='#333'; ctx.lineWidth=1.8;
       ctx.beginPath(); ctx.moveTo(x+9,y); ctx.lineTo(x+9,y-30); ctx.stroke();
-      if(freq==='C4'){ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-14,95);ctx.lineTo(x+14,95);ctx.stroke();}
+      if(freq==='C4'){ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-14,110);ctx.lineTo(x+14,110);ctx.stroke();}
     }
   });
 }
@@ -1350,7 +1350,7 @@ function drawDirectionQ(q) {
     ctx.beginPath();ctx.ellipse(x,y,10,7,-0.2,0,Math.PI*2);ctx.fill();
     ctx.strokeStyle='#333';ctx.lineWidth=1.8;
     ctx.beginPath();ctx.moveTo(x+9,y);ctx.lineTo(x+9,y-30);ctx.stroke();
-    if(freq==='C4'){ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-14,95);ctx.lineTo(x+14,95);ctx.stroke();}
+    if(freq==='C4'){ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-14,110);ctx.lineTo(x+14,110);ctx.stroke();}
   });
 }
 function playDirectionQ() {
