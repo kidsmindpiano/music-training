@@ -127,6 +127,28 @@ body { font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:
 /* ===== UNIT DIVIDERS ===== */
 .path-unit { font-size:11px; color:var(--sub); background:#eee; padding:4px 14px; border-radius:10px; margin:8px 0; font-weight:700; letter-spacing:1px; }
 
+/* ===== LOGIN ===== */
+.login-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg,#e8f0fe,#fce4ec,#fff8e1); }
+.login-box { background:#fff; border-radius:24px; padding:36px 28px; max-width:360px; width:90%; box-shadow:0 8px 30px rgba(0,0,0,0.1); text-align:center; }
+.login-box img { height:80px; border-radius:16px; margin-bottom:12px; }
+.login-box h2 { font-size:22px; color:var(--blue); margin-bottom:4px; }
+.login-box p { font-size:13px; color:var(--sub); margin-bottom:20px; }
+.login-input { width:100%; padding:14px 16px; border:2px solid #e0e0e0; border-radius:12px; font-size:16px; text-align:center; margin-bottom:12px; outline:none; transition:border .2s; }
+.login-input:focus { border-color:var(--blue); }
+.login-btn { width:100%; padding:14px; border:none; border-radius:12px; font-size:16px; font-weight:700; color:#fff; cursor:pointer; transition:all .2s; margin-bottom:8px; }
+.login-btn:hover { transform:scale(1.02); }
+.login-btn.primary { background:var(--blue); }
+.login-btn.secondary { background:var(--pink); }
+.login-divider { color:var(--sub); font-size:13px; margin:16px 0; }
+.user-code { background:#f0f7ff; border:2px dashed var(--blue); border-radius:12px; padding:12px; margin:12px 0; }
+.user-code .code { font-size:28px; font-weight:800; color:var(--blue); letter-spacing:4px; }
+.user-code .hint { font-size:11px; color:var(--sub); margin-top:4px; }
+.login-users { max-height:200px; overflow-y:auto; margin-bottom:12px; }
+.login-user-btn { width:100%; padding:12px 16px; border:2px solid #eee; border-radius:12px; background:#fff; font-size:15px; cursor:pointer; margin-bottom:6px; text-align:left; display:flex; align-items:center; justify-content:space-between; transition:all .2s; }
+.login-user-btn:hover { border-color:var(--blue); background:#f0f7ff; }
+.login-user-btn .name { font-weight:700; }
+.login-user-btn .meta { font-size:12px; color:var(--sub); }
+
 /* ===== RESPONSIVE ===== */
 @media(max-width:400px) {
   .path-node { width:62px; height:62px; font-size:24px; }
@@ -136,10 +158,37 @@ body { font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:
 </head>
 <body>
 
+<!-- ===== LOGIN SCREEN ===== -->
+<div id="screen-login" class="screen active">
+  <div class="login-box">
+    <img src="logo.jpg" alt="logo">
+    <h2>🎵 뮤직 마스터</h2>
+    <p>음악 실력을 키워봐요!</p>
+
+    <div id="login-existing" style="display:none">
+      <div class="login-divider">기존 사용자</div>
+      <div class="login-users" id="login-users"></div>
+    </div>
+
+    <div class="login-divider" id="login-new-label">처음이에요? 이름을 입력하세요!</div>
+    <input class="login-input" id="login-name" placeholder="이름을 입력하세요" maxlength="10">
+    <button class="login-btn primary" onclick="registerUser()">시작하기 🎵</button>
+
+    <div id="login-code-area" style="display:none">
+      <div class="login-divider">또는 코드로 로그인</div>
+      <input class="login-input" id="login-code" placeholder="코드 4자리 입력" maxlength="4" style="letter-spacing:6px;font-weight:700">
+      <button class="login-btn secondary" onclick="loginByCode()">코드로 로그인</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== HOME SCREEN ===== -->
-<div id="screen-home" class="screen active">
+<div id="screen-home" class="screen">
   <div class="top-bar">
-    <img src="logo.jpg" class="logo" alt="logo">
+    <div style="display:flex;align-items:center;gap:6px;cursor:pointer" onclick="logoutUser()">
+      <img src="logo.jpg" class="logo" alt="logo">
+      <span id="home-name" style="font-size:13px;font-weight:700;color:var(--blue)"></span>
+    </div>
     <div class="streak"><span>🔥</span><span id="home-streak">0</span></div>
     <div class="xp"><span>⚡</span><span id="home-xp">0</span> XP</div>
   </div>
@@ -398,15 +447,132 @@ const SKILLS = [
 ];
 
 // ============================================================
+// USER MANAGEMENT
+// ============================================================
+const USERS_KEY = 'music_duo_users';
+let currentUser = null; // { code, name, data }
+
+function getAllUsers() {
+  try { return JSON.parse(localStorage.getItem(USERS_KEY)) || {}; } catch(e){ return {}; }
+}
+function saveAllUsers(users) { localStorage.setItem(USERS_KEY, JSON.stringify(users)); }
+
+function genCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 혼동 없는 문자
+  let code = '';
+  for(let i=0;i<4;i++) code += chars[Math.floor(Math.random()*chars.length)];
+  const users = getAllUsers();
+  if (users[code]) return genCode(); // 중복 방지
+  return code;
+}
+
+function registerUser() {
+  const name = document.getElementById('login-name').value.trim();
+  if (!name) { document.getElementById('login-name').style.borderColor='var(--red)'; return; }
+  const code = genCode();
+  const users = getAllUsers();
+  users[code] = { name, data: { xp:0, streak:0, lastDay:null, skills:{}, dailyLessons:0, dailyDate:null } };
+  saveAllUsers(users);
+
+  // 코드 보여주기
+  const area = document.getElementById('question-area') || document.getElementById('login-code-area');
+  document.querySelector('.login-box').innerHTML = `
+    <img src="logo.jpg" style="height:60px;border-radius:16px;margin-bottom:12px">
+    <h2>환영해요, ${name}! 🎉</h2>
+    <p>다음에 로그인할 때 이 코드를 사용하세요</p>
+    <div class="user-code">
+      <div class="code">${code}</div>
+      <div class="hint">📝 이 코드를 꼭 기억하세요!</div>
+    </div>
+    <button class="login-btn primary" onclick="loginWithCode('${code}')">시작하기 🎵</button>
+  `;
+}
+
+function loginByCode() {
+  const code = document.getElementById('login-code').value.trim().toUpperCase();
+  const users = getAllUsers();
+  if (!users[code]) {
+    document.getElementById('login-code').style.borderColor = 'var(--red)';
+    alert('없는 코드예요. 다시 확인해주세요!');
+    return;
+  }
+  loginWithCode(code);
+}
+
+function loginWithCode(code) {
+  const users = getAllUsers();
+  const user = users[code];
+  currentUser = { code, name: user.name };
+  DATA = user.data;
+  localStorage.setItem('music_duo_lastUser', code);
+  goHome();
+}
+
+function logoutUser() {
+  if (confirm('로그아웃 할까요?')) {
+    saveCurrentUser();
+    currentUser = null;
+    localStorage.removeItem('music_duo_lastUser');
+    showScreen('login');
+    renderLogin();
+  }
+}
+
+function saveCurrentUser() {
+  if (!currentUser) return;
+  const users = getAllUsers();
+  if (users[currentUser.code]) {
+    users[currentUser.code].data = DATA;
+    saveAllUsers(users);
+  }
+}
+
+function renderLogin() {
+  const users = getAllUsers();
+  const entries = Object.entries(users);
+  const existingDiv = document.getElementById('login-existing');
+  const usersDiv = document.getElementById('login-users');
+  const codeArea = document.getElementById('login-code-area');
+
+  if (entries.length > 0) {
+    existingDiv.style.display = 'block';
+    codeArea.style.display = 'block';
+    document.getElementById('login-new-label').textContent = '새로 시작하기';
+    usersDiv.innerHTML = '';
+    entries.forEach(([code, u]) => {
+      const xp = u.data.xp || 0;
+      const streak = u.data.streak || 0;
+      const btn = document.createElement('button');
+      btn.className = 'login-user-btn';
+      btn.innerHTML = `<span class="name">🎵 ${u.name}</span><span class="meta">⚡${xp}XP 🔥${streak}</span>`;
+      btn.onclick = () => loginWithCode(code);
+      usersDiv.appendChild(btn);
+    });
+  } else {
+    existingDiv.style.display = 'none';
+    codeArea.style.display = 'none';
+  }
+}
+
+// ============================================================
 // STATE
 // ============================================================
-const STORE_KEY = 'music_duo_v1';
 let DATA;
 function load() {
-  try { DATA = JSON.parse(localStorage.getItem(STORE_KEY)); } catch(e){}
-  if (!DATA) DATA = { xp:0, streak:0, lastDay:null, skills:{}, dailyLessons:0, dailyDate:null };
+  // 자동 로그인 시도
+  const lastCode = localStorage.getItem('music_duo_lastUser');
+  if (lastCode) {
+    const users = getAllUsers();
+    if (users[lastCode]) {
+      currentUser = { code: lastCode, name: users[lastCode].name };
+      DATA = users[lastCode].data;
+      return true;
+    }
+  }
+  DATA = { xp:0, streak:0, lastDay:null, skills:{}, dailyLessons:0, dailyDate:null };
+  return false;
 }
-function save() { localStorage.setItem(STORE_KEY, JSON.stringify(DATA)); }
+function save() { saveCurrentUser(); }
 
 function getSkillState(id) { return DATA.skills[id] || { lessonsCompleted:0, unlocked: true }; }
 function setSkillState(id, s) { DATA.skills[id] = s; save(); }
@@ -432,6 +598,7 @@ function showScreen(id) {
 
 function goHome() {
   showScreen('home');
+  document.getElementById('home-name').textContent = currentUser ? currentUser.name : '';
   renderHome();
 }
 
@@ -1801,8 +1968,12 @@ function updateLessonProgress() {
 // ============================================================
 // INIT
 // ============================================================
-load();
-renderHome();
+const autoLogged = load();
+if (autoLogged) {
+  goHome();
+} else {
+  renderLogin();
+}
 </script>
 </body>
 </html>
