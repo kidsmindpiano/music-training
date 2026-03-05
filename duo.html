@@ -873,12 +873,12 @@ function genIntervalQ() {
 // --- 리듬 박수치기 ---
 function genRhythmTapQ() {
   const patterns = [
-    {name:'2박+2박', beats:[2,2], display:'𝅗𝅥  𝅗𝅥'},
-    {name:'1+1+1+1', beats:[1,1,1,1], display:'♩ ♩ ♩ ♩'},
-    {name:'1+1+2', beats:[1,1,2], display:'♩ ♩ 𝅗𝅥'},
-    {name:'2+1+1', beats:[2,1,1], display:'𝅗𝅥 ♩ ♩'},
-    {name:'1+2+1', beats:[1,2,1], display:'♩ 𝅗𝅥 ♩'},
-    {name:'4박', beats:[4], display:'𝅝'},
+    {name:'2박+2박', beats:[2,2], noteTypes:['half','half']},
+    {name:'1+1+1+1', beats:[1,1,1,1], noteTypes:['quarter','quarter','quarter','quarter']},
+    {name:'1+1+2', beats:[1,1,2], noteTypes:['quarter','quarter','half']},
+    {name:'2+1+1', beats:[2,1,1], noteTypes:['half','quarter','quarter']},
+    {name:'1+2+1', beats:[1,2,1], noteTypes:['quarter','half','quarter']},
+    {name:'4박', beats:[4], noteTypes:['whole']},
   ];
   const chosen = rand(patterns);
   return { type:'rhythm-tap', pattern:chosen, answer:'done', prompt:'리듬에 맞춰 탭 하세요! 👏' };
@@ -1047,7 +1047,7 @@ function showQuestion() {
 
   // 리듬 박수
   if (q.type === 'rhythm-tap') {
-    html += `<div class="q-sub" style="font-size:28px;margin-bottom:16px">${q.pattern.display}</div>`;
+    html += `<canvas class="q-staff" id="q-canvas" width="400" height="120" style="max-width:400px;height:120px"></canvas>`;
     html += `<div class="q-sub">패턴: ${q.pattern.name} (총 ${q.pattern.beats.reduce((a,b)=>a+b,0)}박)</div>`;
     html += `<div class="rhythm-tap" id="tap-area" onclick="handleTap()">👏 여기를 탭 하세요!</div>`;
     html += `<div class="q-sub" id="tap-status">리듬에 맞춰 탭 해보세요</div>`;
@@ -1086,7 +1086,7 @@ function showQuestion() {
     if (q.type === 'high-low') setTimeout(()=>{playHighLow('A');setTimeout(()=>playHighLow('B'),800);}, 300);
     if (q.type === 'interval') setTimeout(playIntervalQ, 300);
     if (q.type === 'rhythm-compare') drawRhythmCompare(q);
-    if (q.type === 'rhythm-tap') initTap(q);
+    if (q.type === 'rhythm-tap') { drawRhythmTapPattern(q); initTap(q); }
     if (q.type === 'note-name-id' || q.type === 'note-beats') drawNoteTypeQ(q);
     if (q.type === 'rest-id') drawRestQ(q);
     if (q.type === 'accidental-read') drawAccidentalQ(q);
@@ -1239,6 +1239,34 @@ function playStaccatoEar() {
       // 길게 이어서
       notes.forEach((n,i)=>synth.triggerAttackRelease(n,'4n',now+i*0.4));
     }
+  });
+}
+
+// --- 리듬탭 패턴 그리기 ---
+function drawRhythmTapPattern(q) {
+  const c=document.getElementById('q-canvas'); if(!c) return;
+  const ctx=c.getContext('2d'); ctx.clearRect(0,0,400,120);
+  const types = q.pattern.noteTypes;
+  const spacing = 320 / types.length;
+  types.forEach((type, i) => {
+    const cx = 60 + i * spacing, cy = 65;
+    ctx.fillStyle='#333'; ctx.strokeStyle='#333';
+    if (type==='whole') {
+      ctx.lineWidth=3; ctx.beginPath(); ctx.ellipse(cx,cy,18,13,-0.2,0,Math.PI*2); ctx.stroke();
+    } else if (type==='half') {
+      ctx.lineWidth=3; ctx.beginPath(); ctx.ellipse(cx,cy,16,11,-0.2,0,Math.PI*2); ctx.stroke();
+      ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(cx+15,cy); ctx.lineTo(cx+15,cy-40); ctx.stroke();
+    } else if (type==='quarter') {
+      ctx.beginPath(); ctx.ellipse(cx,cy,16,11,-0.2,0,Math.PI*2); ctx.fill();
+      ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(cx+15,cy); ctx.lineTo(cx+15,cy-40); ctx.stroke();
+    } else if (type==='eighth') {
+      ctx.beginPath(); ctx.ellipse(cx,cy,16,11,-0.2,0,Math.PI*2); ctx.fill();
+      ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(cx+15,cy); ctx.lineTo(cx+15,cy-40); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx+15,cy-40); ctx.quadraticCurveTo(cx+30,cy-30,cx+20,cy-18); ctx.stroke();
+    }
+    // 박자 라벨
+    ctx.fillStyle='#999'; ctx.font='12px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(q.pattern.beats[i]+'박', cx, cy+28); ctx.textAlign='start';
   });
 }
 
