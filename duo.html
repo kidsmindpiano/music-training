@@ -1415,7 +1415,7 @@ function drawRhythmCompare(q) {
 // --- 리듬 박수치기 ---
 let tapState = null;
 function initTap(q) {
-  const BPM_MS = 500; // 1박 = 500ms
+  const BPM_MS = 700; // 1박 = 700ms (느리게)
   const beats = q.pattern.beats;
   const noteTypes = q.pattern.noteTypes;
   const totalBeats = beats.reduce((a,b)=>a+b,0);
@@ -1429,7 +1429,7 @@ function initTap(q) {
   }
 
   const HITX = 70; // 판정선 X
-  const PX_PER_BEAT = 80; // 1박당 픽셀 폭
+  const PX_PER_BEAT = 50; // 1박당 픽셀 폭 (느리게)
   const SCROLL_SPEED = PX_PER_BEAT / (BPM_MS/1000); // px/sec
 
   tapState = {
