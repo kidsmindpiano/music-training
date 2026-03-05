@@ -243,6 +243,39 @@ const INTERVALS = [
   {name:'8도(옥타브)',semitones:12,ex:['도','도']},
 ];
 
+// 음표 이름 데이터
+const NOTE_TYPES = [
+  { name:'온음표', beats:4, filled:false, stem:false, flag:0, desc:'4박 — 가장 긴 기본 음표' },
+  { name:'2분음표', beats:2, filled:false, stem:true, flag:0, desc:'2박 — 온음표의 반' },
+  { name:'4분음표', beats:1, filled:true, stem:true, flag:0, desc:'1박 — 기본 박자 단위' },
+  { name:'8분음표', beats:0.5, filled:true, stem:true, flag:1, desc:'반 박 — 꼬리 1개' },
+  { name:'16분음표', beats:0.25, filled:true, stem:true, flag:2, desc:'4분의 1박 — 꼬리 2개' },
+  { name:'온쉼표', beats:4, isRest:true, desc:'4박 쉬기 — 줄 아래에 매달림' },
+  { name:'2분쉼표', beats:2, isRest:true, desc:'2박 쉬기 — 줄 위에 올라감' },
+  { name:'4분쉼표', beats:1, isRest:true, desc:'1박 쉬기' },
+];
+
+// 샵/플랫 데이터
+const ACCIDENTALS = [
+  { symbol:'♯', name:'샵(Sharp)', desc:'반음 올림', example:'도♯ = 도와 레 사이' },
+  { symbol:'♭', name:'플랫(Flat)', desc:'반음 내림', example:'레♭ = 도와 레 사이' },
+  { symbol:'♮', name:'제자리표(Natural)', desc:'원래 음으로', example:'샵/플랫 취소' },
+];
+const SHARP_NOTES = [
+  { kr:'도♯', eng:'C♯', between:['도','레'] },
+  { kr:'레♯', eng:'D♯', between:['레','미'] },
+  { kr:'파♯', eng:'F♯', between:['파','솔'] },
+  { kr:'솔♯', eng:'G♯', between:['솔','라'] },
+  { kr:'라♯', eng:'A♯', between:['라','시'] },
+];
+const FLAT_NOTES = [
+  { kr:'레♭', eng:'D♭', between:['도','레'] },
+  { kr:'미♭', eng:'E♭', between:['레','미'] },
+  { kr:'솔♭', eng:'G♭', between:['파','솔'] },
+  { kr:'라♭', eng:'A♭', between:['솔','라'] },
+  { kr:'시♭', eng:'B♭', between:['라','시'] },
+];
+
 const SKILLS = [
   // === UNIT 1: 음 기초 ===
   { id:'note1', icon:'🎵', label:'도레미', desc:'도, 레, 미 배우기',
@@ -261,7 +294,21 @@ const SKILLS = [
       { type:'mixed', notePool:['도','레','미','파','솔','라','시'], qCount:12 },
     ]},
 
-  // === UNIT 2: 리듬 ===
+  // === UNIT 2: 음표 이름 & 음악 기호 ===
+  { id:'notename1', icon:'📝', label:'음표 이름', desc:'온음표부터 16분음표까지',
+    lessons: [
+      { type:'note-name', qCount:8 },
+      { type:'note-name', qCount:10 },
+      { type:'note-name-beats', qCount:10 },
+    ]},
+  { id:'accidental1', icon:'♯', label:'샵과 플랫', desc:'#과 ♭ 배우기',
+    lessons: [
+      { type:'accidental-intro', qCount:8 },
+      { type:'accidental-read', qCount:10 },
+      { type:'accidental-ear', qCount:10 },
+    ]},
+
+  // === UNIT 3: 리듬 ===
   { id:'rhythm1', icon:'🥁', label:'리듬 기초', desc:'음표 종류 배우기',
     lessons: [
       { type:'rhythm', qCount:8 },
@@ -390,7 +437,7 @@ function renderHome() {
   const path = document.getElementById('skill-path');
   path.innerHTML = '';
 
-  const unitBreaks = {3:'🥁 리듬',6:'👂 청음',9:'🎤 멜로디',11:'📚 음악 지식',13:'🏆 종합'};
+  const unitBreaks = {3:'📝 음표 이름 & 기호',5:'🥁 리듬',8:'👂 청음',11:'🎤 멜로디',13:'📚 음악 지식',15:'🏆 종합'};
 
   SKILLS.forEach((skill, idx) => {
     const st = getSkillState(skill.id);
@@ -481,7 +528,12 @@ function generateQuestions(lesson) {
     const r = Math.random();
     const t = lesson.type;
 
-    if (t === 'melody') { qs.push(genMelodyQ(pool)); }
+    if (t === 'note-name') { qs.push(Math.random()>0.3 ? genNoteNameQ() : genRestQ()); }
+    else if (t === 'note-name-beats') { qs.push(genNoteNameBeatsQ()); }
+    else if (t === 'accidental-intro') { qs.push(genAccidentalIntroQ()); }
+    else if (t === 'accidental-read') { qs.push(genAccidentalReadQ()); }
+    else if (t === 'accidental-ear') { qs.push(genAccidentalEarQ()); }
+    else if (t === 'melody') { qs.push(genMelodyQ(pool)); }
     else if (t === 'rhythm') { qs.push(genRhythmQ()); }
     else if (t === 'rhythm-tap') { qs.push(genRhythmTapQ()); }
     else if (t === 'rhythm-compare') { qs.push(genRhythmCompareQ()); }
@@ -553,6 +605,86 @@ function genRhythmQ() {
   if(!opts.includes(chosen.name)) opts[0] = chosen.name;
   return { type:'rhythm-id', rhythm:chosen, answer:chosen.name, options:shuffle(opts),
     prompt:'이 음표의 이름은?' };
+}
+
+// --- 음표 이름 맞추기 ---
+function genNoteNameQ() {
+  const notes = NOTE_TYPES.filter(n=>!n.isRest);
+  const chosen = rand(notes);
+  const opts = shuffle(notes).slice(0,4).map(n=>n.name);
+  if(!opts.includes(chosen.name)) opts[0]=chosen.name;
+  return { type:'note-name-id', noteType:chosen, answer:chosen.name, options:shuffle(opts),
+    prompt:'이 음표의 이름은?' };
+}
+
+// --- 음표 박자 맞추기 ---
+function genNoteNameBeatsQ() {
+  const notes = NOTE_TYPES.filter(n=>!n.isRest);
+  const chosen = rand(notes);
+  const allBeats = ['4박','2박','1박','반 박','4분의 1박'];
+  const beatsStr = chosen.beats>=1 ? chosen.beats+'박' : chosen.beats===0.5 ? '반 박' : '4분의 1박';
+  const opts = shuffle(allBeats).slice(0,4);
+  if(!opts.includes(beatsStr)) opts[0]=beatsStr;
+  return { type:'note-beats', noteType:chosen, answer:beatsStr, options:shuffle(opts),
+    prompt:`${chosen.name}은(는) 몇 박일까요?` };
+}
+
+// --- 쉼표 맞추기 ---
+function genRestQ() {
+  const rests = NOTE_TYPES.filter(n=>n.isRest);
+  const chosen = rand(rests);
+  const opts = shuffle(rests).slice(0,3).map(r=>r.name);
+  if(!opts.includes(chosen.name)) opts[0]=chosen.name;
+  return { type:'rest-id', noteType:chosen, answer:chosen.name, options:shuffle(opts),
+    prompt:'이 쉼표의 이름은?' };
+}
+
+// --- 샵/플랫 기호 소개 ---
+function genAccidentalIntroQ() {
+  const r = Math.random();
+  if (r < 0.4) {
+    // 기호 → 이름
+    const chosen = rand(ACCIDENTALS);
+    const opts = shuffle(ACCIDENTALS).map(a=>a.name);
+    return { type:'accidental-symbol', accidental:chosen, answer:chosen.name, options:shuffle(opts),
+      prompt:`이 기호 "${chosen.symbol}" 의 이름은?` };
+  } else if (r < 0.7) {
+    // 기호 → 뜻
+    const chosen = rand(ACCIDENTALS);
+    const opts = shuffle(ACCIDENTALS).map(a=>a.desc);
+    return { type:'accidental-meaning', accidental:chosen, answer:chosen.desc, options:shuffle(opts),
+      prompt:`"${chosen.symbol} ${chosen.name}" 의 뜻은?` };
+  } else {
+    // 이명동음: 도♯ = 레♭?
+    const idx = Math.floor(Math.random()*SHARP_NOTES.length);
+    const sharp = SHARP_NOTES[idx];
+    const flat = FLAT_NOTES[idx];
+    return { type:'enharmonic', answer:'같은 음이에요!',
+      options:shuffle(['같은 음이에요!','다른 음이에요!']),
+      prompt:`${sharp.kr}과 ${flat.kr}는 같은 음일까요?`,
+      sub:`${sharp.kr}은 ${sharp.between[0]}과 ${sharp.between[1]} 사이` };
+  }
+}
+
+// --- 샵/플랫 오선지 읽기 ---
+function genAccidentalReadQ() {
+  const useSharp = Math.random() > 0.5;
+  const note = useSharp ? rand(SHARP_NOTES) : rand(FLAT_NOTES);
+  const allNotes = [...SHARP_NOTES.map(n=>n.kr), ...FLAT_NOTES.map(n=>n.kr)];
+  const opts = shuffle(allNotes).slice(0,4);
+  if(!opts.includes(note.kr)) opts[0]=note.kr;
+  return { type:'accidental-read', note, isSharp:useSharp, answer:note.kr, options:shuffle(opts),
+    prompt:'이 음의 이름은?' };
+}
+
+// --- 샵/플랫 청음 ---
+function genAccidentalEarQ() {
+  const baseNote = rand(['도','레','파','솔','라']);
+  const goSharp = Math.random()>0.5;
+  const answer = goSharp ? '반음 올라갔어요 ♯' : '반음 내려갔어요 ♭';
+  return { type:'accidental-ear', baseNote, goSharp, answer,
+    options:shuffle(['반음 올라갔어요 ♯','반음 내려갔어요 ♭']),
+    prompt:'원래 음과 비교해서 어떻게 변했나요? 🎧' };
 }
 
 // --- 높낮이 비교 ---
@@ -688,6 +820,37 @@ function showQuestion() {
     html += `<canvas class="q-staff" id="q-canvas" width="200" height="160" style="max-width:200px"></canvas>`;
   }
 
+  // 음표 이름 맞추기
+  if (q.type === 'note-name-id' || q.type === 'note-beats') {
+    html += `<canvas class="q-staff" id="q-canvas" width="200" height="160" style="max-width:200px"></canvas>`;
+    if (q.noteType.desc) html += `<div class="q-sub">${q.noteType.desc}</div>`;
+  }
+
+  // 쉼표 맞추기
+  if (q.type === 'rest-id') {
+    html += `<canvas class="q-staff" id="q-canvas" width="200" height="160" style="max-width:200px"></canvas>`;
+  }
+
+  // 샵/플랫 기호
+  if (q.type === 'accidental-symbol' || q.type === 'accidental-meaning') {
+    html += `<div style="font-size:64px;margin-bottom:12px">${q.accidental.symbol}</div>`;
+  }
+  if (q.type === 'enharmonic') {
+    html += `<div style="font-size:20px;margin-bottom:8px">🎹</div>`;
+    if(q.sub) html += `<div class="q-sub">${q.sub}</div>`;
+  }
+
+  // 샵/플랫 오선지
+  if (q.type === 'accidental-read') {
+    html += `<canvas class="q-staff" id="q-canvas" width="400" height="160"></canvas>`;
+  }
+
+  // 샵/플랫 청음
+  if (q.type === 'accidental-ear') {
+    html += `<button class="play-btn" onclick="playAccidentalEar()">🔊</button>`;
+    html += `<div class="q-sub">두 음을 비교해 들어보세요</div>`;
+  }
+
   // 높낮이
   if (q.type === 'high-low') {
     html += `<div style="display:flex;gap:16px;margin-bottom:20px">`;
@@ -752,6 +915,10 @@ function showQuestion() {
     if (q.type === 'interval') setTimeout(playIntervalQ, 300);
     if (q.type === 'rhythm-compare') drawRhythmCompare(q);
     if (q.type === 'rhythm-tap') initTap(q);
+    if (q.type === 'note-name-id' || q.type === 'note-beats') drawNoteTypeQ(q);
+    if (q.type === 'rest-id') drawRestQ(q);
+    if (q.type === 'accidental-read') drawAccidentalQ(q);
+    if (q.type === 'accidental-ear') setTimeout(playAccidentalEar, 300);
   }, 50);
 }
 
@@ -849,6 +1016,90 @@ function playMelodyQ() {
     q.melody.forEach((note,i) => {
       synth.triggerAttackRelease(NOTE_FREQ[note],'8n',now+i*0.4);
     });
+  });
+}
+
+// --- 음표 이름 그리기 ---
+function drawNoteTypeQ(q) {
+  const c=document.getElementById('q-canvas'); if(!c) return;
+  const ctx=c.getContext('2d');ctx.clearRect(0,0,200,160);
+  const n=q.noteType, cx=100, cy=90;
+  ctx.fillStyle='#333';ctx.strokeStyle='#333';
+  if(!n.filled&&!n.stem){ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(cx,cy,18,13,-0.2,0,Math.PI*2);ctx.stroke();}
+  else if(!n.filled&&n.stem){ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(cx,cy,16,11,-0.2,0,Math.PI*2);ctx.stroke();ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(cx+15,cy);ctx.lineTo(cx+15,cy-50);ctx.stroke();}
+  else if(n.filled&&n.stem&&n.flag===0){ctx.beginPath();ctx.ellipse(cx,cy,16,11,-0.2,0,Math.PI*2);ctx.fill();ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(cx+15,cy);ctx.lineTo(cx+15,cy-50);ctx.stroke();}
+  else if(n.filled&&n.stem&&n.flag===1){ctx.beginPath();ctx.ellipse(cx,cy,16,11,-0.2,0,Math.PI*2);ctx.fill();ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(cx+15,cy);ctx.lineTo(cx+15,cy-50);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+15,cy-50);ctx.quadraticCurveTo(cx+32,cy-38,cx+20,cy-24);ctx.stroke();}
+  else if(n.filled&&n.stem&&n.flag===2){ctx.beginPath();ctx.ellipse(cx,cy,16,11,-0.2,0,Math.PI*2);ctx.fill();ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(cx+15,cy);ctx.lineTo(cx+15,cy-50);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+15,cy-50);ctx.quadraticCurveTo(cx+32,cy-38,cx+20,cy-24);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+15,cy-43);ctx.quadraticCurveTo(cx+32,cy-31,cx+20,cy-17);ctx.stroke();}
+}
+
+// --- 쉼표 그리기 ---
+function drawRestQ(q) {
+  const c=document.getElementById('q-canvas'); if(!c) return;
+  const ctx=c.getContext('2d');ctx.clearRect(0,0,200,160);
+  const n=q.noteType, cx=100;
+  ctx.fillStyle='#333';ctx.strokeStyle='#333';
+  // 오선 3줄만 (참고용)
+  ctx.strokeStyle='#ccc';ctx.lineWidth=1;
+  for(let i=1;i<=3;i++){ctx.beginPath();ctx.moveTo(40,50+i*16);ctx.lineTo(160,50+i*16);ctx.stroke();}
+  ctx.fillStyle='#333';ctx.strokeStyle='#333';
+  if(n.name==='온쉼표'){
+    // 3번째 줄 아래에 매달린 사각형
+    ctx.fillRect(cx-14,50+2*16,28,10);
+  } else if(n.name==='2분쉼표'){
+    // 3번째 줄 위에 올라간 사각형
+    ctx.fillRect(cx-14,50+2*16-10,28,10);
+  } else if(n.name==='4분쉼표'){
+    // 간략한 4분쉼표 그림
+    ctx.lineWidth=3;ctx.lineCap='round';
+    ctx.beginPath();ctx.moveTo(cx-6,65);ctx.lineTo(cx+6,80);ctx.lineTo(cx-6,95);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(cx-6,95);ctx.quadraticCurveTo(cx+8,105,cx-2,120);ctx.stroke();
+    ctx.beginPath();ctx.arc(cx-6,120,5,0,Math.PI*2);ctx.fill();
+    ctx.lineCap='butt';
+  }
+}
+
+// --- 샵/플랫 오선지 ---
+function drawAccidentalQ(q) {
+  const c=document.getElementById('q-canvas'); if(!c) return;
+  const ctx=c.getContext('2d');ctx.clearRect(0,0,400,160);
+  ctx.strokeStyle='#bbb';ctx.lineWidth=1.5;
+  for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(40,35+i*15);ctx.lineTo(360,35+i*15);ctx.stroke();}
+  ctx.font='56px serif';ctx.fillStyle='#6A9FC5';ctx.fillText('𝄞',8,82);
+
+  // 기본음 위치 찾기
+  const baseNote = q.note.between[0];
+  const baseFreq = NOTE_FREQ[baseNote];
+  const baseY = noteY(baseFreq);
+  // 샵/플랫 음은 기본음과 다음음 사이
+  const nextNote = q.note.between[1];
+  const nextFreq = NOTE_FREQ[nextNote];
+  const nextY = noteY(nextFreq);
+  const y = (baseY + nextY) / 2;
+  const x = 220;
+
+  // 변화표 기호
+  ctx.font='bold 22px serif';ctx.fillStyle='#e53935';ctx.textAlign='center';
+  ctx.fillText(q.isSharp ? '♯' : '♭', x-22, y+7);
+
+  // 음표
+  ctx.fillStyle='#333';ctx.textAlign='start';
+  ctx.beginPath();ctx.ellipse(x,y,11,8,-0.2,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#333';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x+10,y);ctx.lineTo(x+10,y-35);ctx.stroke();
+}
+
+// --- 샵/플랫 청음 ---
+function playAccidentalEar() {
+  const q=lessonState.questions[lessonState.current];
+  const base=NOTE_FREQ[q.baseNote];
+  ensureTone().then(()=>{
+    const now=Tone.now();
+    // 원래 음
+    synth.triggerAttackRelease(base,'4n',now);
+    // 반음 올리거나 내린 음
+    const freq=Tone.Frequency(base).toFrequency();
+    const altered=q.goSharp ? freq*Math.pow(2,1/12) : freq/Math.pow(2,1/12);
+    setTimeout(()=>synth.triggerAttackRelease(altered,'4n'),700);
   });
 }
 
