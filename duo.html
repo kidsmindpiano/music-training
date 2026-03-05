@@ -1444,15 +1444,27 @@ function initTap(q) {
   el.onmousedown = el.ontouchstart = (e)=>{ e.preventDefault(); tapDown(); };
   el.onmouseup = el.onmouseleave = el.ontouchend = el.ontouchcancel = (e)=>{ e.preventDefault(); tapUp(); };
 
-  // 카운트다운 후 시작
+  // 메트로놈 카운트다운 후 시작
   const statusEl = document.getElementById('tap-status');
   let count = 3;
-  statusEl.textContent = `${count}...`;
+  statusEl.textContent = `준비... ${count}`;
+  function playMetronome() {
+    ensureTone().then(()=>{
+      const click = new Tone.MetalSynth({
+        frequency:800, envelope:{attack:0.001,decay:0.05,release:0.01},
+        harmonicity:0, modulationIndex:0, resonance:100, octaves:0
+      }).toDestination();
+      click.volume.value = -8;
+      click.triggerAttackRelease('16n');
+      setTimeout(()=>click.dispose(),200);
+    });
+  }
+  playMetronome();
   const cdi = setInterval(()=>{
     count--;
-    if (count > 0) { statusEl.textContent = `${count}...`; }
-    else { clearInterval(cdi); statusEl.textContent = '음표가 판정선에 오면 꾹!'; tapStart(); }
-  }, 600);
+    if (count > 0) { statusEl.textContent = `준비... ${count}`; playMetronome(); }
+    else { clearInterval(cdi); playMetronome(); statusEl.textContent = '음표가 판정선에 오면 꾹!'; tapStart(); }
+  }, tapState.BPM_MS);
 }
 
 function tapStart() {
@@ -1504,7 +1516,8 @@ function tapUp() {
   if (idx >= nd.length) return;
 
   const note = nd[idx];
-  const noteArriveTime = note.startBeat * tapState.BPM_MS / 1000; // 초
+  const travelTime = (400 - tapState.HITX) / tapState.SCROLL_SPEED; // 오른쪽 끝→판정선 이동 시간
+  const noteArriveTime = note.startBeat * tapState.BPM_MS / 1000 + travelTime;
   const pressTimeDiff = Math.abs(elapsed - noteArriveTime);
   const requiredHold = note.beat * tapState.BPM_MS;
   const holdPct = Math.min(1, holdDuration / requiredHold);
@@ -1528,7 +1541,8 @@ function checkMisses() {
   const idx = tapState.currentIdx;
   if (idx >= nd.length) return;
   const note = nd[idx];
-  const noteEndTime = (note.startBeat + note.beat) * tapState.BPM_MS / 1000 + 0.5;
+  const trvl = (400 - tapState.HITX) / tapState.SCROLL_SPEED;
+  const noteEndTime = (note.startBeat + note.beat) * tapState.BPM_MS / 1000 + trvl + 0.5;
   if (now > noteEndTime && !tapState.pressing) {
     note.result = 'miss'; tapState.miss++;
     tapState.currentIdx++;
@@ -1593,7 +1607,7 @@ function renderScrolling() {
 
   // 음표들 그리기
   noteData.forEach((note, i) => {
-    const noteX = HITX + (note.startBeat * PX_PER_BEAT) - scrollOffset;
+    const noteX = HITX + (note.startBeat * PX_PER_BEAT) - scrollOffset + (W - HITX);
     const noteW = note.beat * PX_PER_BEAT;
     const cy = H/2;
 
