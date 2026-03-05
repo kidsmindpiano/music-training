@@ -149,6 +149,39 @@ body { font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:
 .login-user-btn .name { font-weight:700; }
 .login-user-btn .meta { font-size:12px; color:var(--sub); }
 
+/* ===== DASHBOARD ===== */
+.dash-header { text-align:center; padding:20px 16px 8px; }
+.dash-header h2 { font-size:20px; color:var(--blue); }
+.dash-header p { font-size:13px; color:var(--sub); }
+.dash-summary { display:flex; gap:10px; padding:12px 16px; overflow-x:auto; }
+.dash-card { flex:0 0 auto; background:#fff; border-radius:14px; padding:14px 18px; text-align:center; box-shadow:var(--shadow); min-width:90px; }
+.dash-card .val { font-size:22px; font-weight:800; color:var(--blue); }
+.dash-card .lbl { font-size:11px; color:var(--sub); }
+
+.dash-table { margin:12px 16px; background:#fff; border-radius:16px; overflow:hidden; box-shadow:var(--shadow); }
+.dash-row { display:flex; align-items:center; padding:12px 16px; border-bottom:1px solid #f0f0f0; }
+.dash-row:last-child { border-bottom:none; }
+.dash-row.header { background:#f8fbff; font-weight:700; font-size:12px; color:var(--sub); }
+.dash-row .rank { width:30px; font-size:16px; font-weight:800; text-align:center; }
+.dash-row .uname { flex:1; font-weight:700; font-size:14px; margin-left:8px; }
+.dash-row .uxp { width:70px; text-align:right; font-weight:700; color:var(--blue); font-size:14px; }
+.dash-row .ustreak { width:50px; text-align:right; font-size:14px; }
+
+.dash-skill-map { margin:16px; }
+.dash-skill-map h3 { font-size:15px; color:var(--text); margin-bottom:10px; }
+.dash-user-row { margin-bottom:16px; background:#fff; border-radius:14px; padding:14px; box-shadow:var(--shadow); }
+.dash-user-row .name-bar { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+.dash-user-row .name-bar .name { font-weight:700; font-size:15px; }
+.dash-user-row .name-bar .stats { font-size:12px; color:var(--sub); }
+.skill-dots { display:flex; flex-wrap:wrap; gap:6px; }
+.skill-dot { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; border:2px solid; position:relative; }
+.skill-dot.completed { border-color:var(--green); background:#e8f5e9; }
+.skill-dot.in-progress { border-color:var(--yellow); background:#fff8e1; }
+.skill-dot.locked { border-color:#ddd; background:#f5f5f5; opacity:0.5; }
+.skill-dot .pip { position:absolute; bottom:-4px; right:-4px; font-size:10px; background:#fff; border-radius:50%; width:16px; height:16px; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 3px rgba(0,0,0,0.15); }
+
+.dash-back { display:block; margin:20px auto; padding:12px 28px; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; background:var(--blue); color:#fff; }
+
 /* ===== RESPONSIVE ===== */
 @media(max-width:400px) {
   .path-node { width:62px; height:62px; font-size:24px; }
@@ -179,7 +212,24 @@ body { font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:
       <input class="login-input" id="login-code" placeholder="코드 4자리 입력" maxlength="4" style="letter-spacing:6px;font-weight:700">
       <button class="login-btn secondary" onclick="loginByCode()">코드로 로그인</button>
     </div>
+    <div class="login-divider">선생님이신가요?</div>
+    <button class="login-btn secondary" onclick="openDashboard()" style="background:var(--yellow);color:#333">📊 학습 현황판 보기</button>
   </div>
+</div>
+
+<!-- ===== DASHBOARD SCREEN ===== -->
+<div id="screen-dashboard" class="screen">
+  <div class="dash-header">
+    <h2>📊 학습 현황판</h2>
+    <p>모든 학생들의 진행 상황을 확인하세요</p>
+  </div>
+  <div class="dash-summary" id="dash-summary"></div>
+  <div class="dash-table" id="dash-ranking"></div>
+  <div class="dash-skill-map" id="dash-skill-map">
+    <h3>🗺 스킬 진행 지도</h3>
+  </div>
+  <button class="dash-back" onclick="dashBack()">← 돌아가기</button>
+  <div style="height:30px"></div>
 </div>
 
 <!-- ===== HOME SCREEN ===== -->
@@ -191,6 +241,7 @@ body { font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:
     </div>
     <div class="streak"><span>🔥</span><span id="home-streak">0</span></div>
     <div class="xp"><span>⚡</span><span id="home-xp">0</span> XP</div>
+    <div style="cursor:pointer;font-size:18px" onclick="openDashboard()" title="학습 현황판">📊</div>
   </div>
 
   <div class="home-header">
@@ -1963,6 +2014,93 @@ function renderHearts() {
 function updateLessonProgress() {
   const pct = lessonState.total > 0 ? (lessonState.current / lessonState.total * 100) : 0;
   document.getElementById('lesson-progress').style.width = pct + '%';
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function openDashboard() {
+  showScreen('dashboard');
+  renderDashboard();
+}
+function dashBack() {
+  if (currentUser) goHome();
+  else { showScreen('login'); renderLogin(); }
+}
+
+function renderDashboard() {
+  const users = getAllUsers();
+  const entries = Object.entries(users);
+
+  // 요약 카드
+  const totalUsers = entries.length;
+  const totalXP = entries.reduce((s,[,u])=>s+(u.data.xp||0),0);
+  const activeToday = entries.filter(([,u])=>u.data.lastDay===todayStr()).length;
+  const avgXP = totalUsers > 0 ? Math.round(totalXP/totalUsers) : 0;
+
+  document.getElementById('dash-summary').innerHTML = `
+    <div class="dash-card"><div class="val">${totalUsers}</div><div class="lbl">총 학생</div></div>
+    <div class="dash-card"><div class="val">${activeToday}</div><div class="lbl">오늘 학습</div></div>
+    <div class="dash-card"><div class="val">${avgXP}</div><div class="lbl">평균 XP</div></div>
+    <div class="dash-card"><div class="val">${totalXP}</div><div class="lbl">총 XP</div></div>
+  `;
+
+  // 랭킹
+  const sorted = entries.sort((a,b)=>(b[1].data.xp||0)-(a[1].data.xp||0));
+  const medals = ['🥇','🥈','🥉'];
+  let rankHtml = `<div class="dash-row header"><div class="rank">#</div><div class="uname">이름</div><div class="uxp">XP</div><div class="ustreak">🔥</div></div>`;
+  sorted.forEach(([code, u], i) => {
+    const medal = i < 3 ? medals[i] : (i+1);
+    rankHtml += `<div class="dash-row">
+      <div class="rank">${medal}</div>
+      <div class="uname">${u.name}</div>
+      <div class="uxp">⚡${u.data.xp||0}</div>
+      <div class="ustreak">${u.data.streak||0}</div>
+    </div>`;
+  });
+  document.getElementById('dash-ranking').innerHTML = rankHtml;
+
+  // 스킬 지도
+  const mapDiv = document.getElementById('dash-skill-map');
+  let mapHtml = '<h3>🗺 스킬 진행 지도</h3>';
+
+  if (entries.length === 0) {
+    mapHtml += '<p style="color:var(--sub);text-align:center;padding:20px">아직 학생이 없어요</p>';
+  } else {
+    sorted.forEach(([code, u]) => {
+      const d = u.data;
+      const completedSkills = SKILLS.filter(sk => {
+        const st = d.skills[sk.id];
+        return st && st.lessonsCompleted >= sk.lessons.length;
+      }).length;
+
+      mapHtml += `<div class="dash-user-row">
+        <div class="name-bar">
+          <span class="name">🎵 ${u.name}</span>
+          <span class="stats">⚡${d.xp||0} XP · 🔥${d.streak||0} · ✅${completedSkills}/${SKILLS.length}</span>
+        </div>
+        <div class="skill-dots">`;
+
+      SKILLS.forEach(sk => {
+        const st = d.skills[sk.id];
+        const total = sk.lessons.length;
+        const done = st ? st.lessonsCompleted : 0;
+        const completed = done >= total;
+        const inProgress = done > 0 && !completed;
+        const cls = completed ? 'completed' : inProgress ? 'in-progress' : 'locked';
+        const pip = completed ? '✓' : inProgress ? done : '';
+
+        mapHtml += `<div class="skill-dot ${cls}" title="${sk.label}: ${done}/${total}">
+          ${sk.icon}
+          ${pip ? `<span class="pip">${pip}</span>` : ''}
+        </div>`;
+      });
+
+      mapHtml += `</div></div>`;
+    });
+  }
+
+  mapDiv.innerHTML = mapHtml;
 }
 
 // ============================================================
