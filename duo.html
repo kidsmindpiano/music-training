@@ -308,6 +308,17 @@ const SKILLS = [
       { type:'accidental-ear', qCount:10 },
     ]},
 
+  { id:'slur1', icon:'🔗', label:'이음줄·붙임줄', desc:'이어서 연주해요',
+    lessons: [
+      { type:'slur-intro', qCount:8 },
+      { type:'slur-quiz', qCount:10 },
+    ]},
+  { id:'staccato1', icon:'⚡', label:'스타카토', desc:'짧게 끊어서!',
+    lessons: [
+      { type:'staccato-intro', qCount:8 },
+      { type:'staccato-ear', qCount:10 },
+    ]},
+
   // === UNIT 3: 리듬 ===
   { id:'rhythm1', icon:'🥁', label:'리듬 기초', desc:'음표 종류 배우기',
     lessons: [
@@ -325,7 +336,13 @@ const SKILLS = [
       { type:'rhythm-compare', qCount:10 },
     ]},
 
-  // === UNIT 3: 청음 ===
+  { id:'rhythm-quiz', icon:'🧩', label:'리듬 퀴즈', desc:'박자 계산하기',
+    lessons: [
+      { type:'rhythm-quiz', qCount:8 },
+      { type:'rhythm-quiz', qCount:10 },
+    ]},
+
+  // === UNIT 4: 청음 ===
   { id:'ear1', icon:'👂', label:'청음 입문', desc:'소리로 음 맞추기',
     lessons: [
       { type:'mixed', notePool:['도','레','미','파','솔'], qCount:10, earFocus:true },
@@ -437,7 +454,7 @@ function renderHome() {
   const path = document.getElementById('skill-path');
   path.innerHTML = '';
 
-  const unitBreaks = {3:'📝 음표 이름 & 기호',5:'🥁 리듬',8:'👂 청음',11:'🎤 멜로디',13:'📚 음악 지식',15:'🏆 종합'};
+  const unitBreaks = {3:'📝 음표 이름 & 기호',7:'🥁 리듬',11:'👂 청음',14:'🎤 멜로디',16:'📚 음악 지식',18:'🏆 종합'};
 
   SKILLS.forEach((skill, idx) => {
     const st = getSkillState(skill.id);
@@ -528,7 +545,12 @@ function generateQuestions(lesson) {
     const r = Math.random();
     const t = lesson.type;
 
-    if (t === 'note-name') { qs.push(Math.random()>0.3 ? genNoteNameQ() : genRestQ()); }
+    if (t === 'slur-intro') { qs.push(genSlurIntroQ()); }
+    else if (t === 'slur-quiz') { qs.push(genSlurQuizQ()); }
+    else if (t === 'staccato-intro') { qs.push(genStaccatoIntroQ()); }
+    else if (t === 'staccato-ear') { qs.push(genStaccatoEarQ()); }
+    else if (t === 'rhythm-quiz') { qs.push(genRhythmQuizQ()); }
+    else if (t === 'note-name') { qs.push(Math.random()>0.3 ? genNoteNameQ() : genRestQ()); }
     else if (t === 'note-name-beats') { qs.push(genNoteNameBeatsQ()); }
     else if (t === 'accidental-intro') { qs.push(genAccidentalIntroQ()); }
     else if (t === 'accidental-read') { qs.push(genAccidentalReadQ()); }
@@ -605,6 +627,136 @@ function genRhythmQ() {
   if(!opts.includes(chosen.name)) opts[0] = chosen.name;
   return { type:'rhythm-id', rhythm:chosen, answer:chosen.name, options:shuffle(opts),
     prompt:'이 음표의 이름은?' };
+}
+
+// --- 이음줄/붙임줄 ---
+function genSlurIntroQ() {
+  const r = Math.random();
+  if (r < 0.35) {
+    // 이음줄 vs 붙임줄 구분
+    const isTie = Math.random()>0.5;
+    return { type:'slur-concept', answer: isTie ? '붙임줄' : '이음줄',
+      options: shuffle(['이음줄','붙임줄']),
+      prompt: isTie ? '같은 높이의 두 음을 이어서\n길게 연주하는 줄은?' : '다른 높이의 음을 부드럽게\n이어서 연주하는 줄은?',
+      info: isTie ? '붙임줄 = 같은 음끼리 연결 → 박자를 합침' : '이음줄 = 다른 음끼리 연결 → 부드럽게 레가토' };
+  } else if (r < 0.7) {
+    // 붙임줄 박자 계산
+    const combos = [
+      {a:'4분음표',b:'4분음표',aBeats:1,bBeats:1,total:'2박'},
+      {a:'2분음표',b:'4분음표',aBeats:2,bBeats:1,total:'3박'},
+      {a:'2분음표',b:'2분음표',aBeats:2,bBeats:2,total:'4박'},
+      {a:'4분음표',b:'8분음표',aBeats:1,bBeats:0.5,total:'1.5박'},
+      {a:'온음표',b:'4분음표',aBeats:4,bBeats:1,total:'5박'},
+    ];
+    const chosen = rand(combos);
+    const opts = shuffle(['1.5박','2박','3박','4박','5박']).slice(0,4);
+    if(!opts.includes(chosen.total)) opts[0]=chosen.total;
+    return { type:'tie-calc', combo:chosen, answer:chosen.total, options:shuffle(opts),
+      prompt:`${chosen.a} + ${chosen.b}을 붙임줄로 이으면?` };
+  } else {
+    // 그림 보고 이음줄/붙임줄 구분
+    const isTie = Math.random()>0.5;
+    return { type:'slur-visual', isTie, answer: isTie ? '붙임줄' : '이음줄',
+      options: shuffle(['이음줄','붙임줄']),
+      prompt: '이 그림은 이음줄일까요, 붙임줄일까요?' };
+  }
+}
+
+function genSlurQuizQ() {
+  const r = Math.random();
+  if (r < 0.5) return genSlurIntroQ();
+  // 레가토 vs 스타카토 구분 퀴즈
+  const isLegato = Math.random()>0.5;
+  return { type:'slur-concept', answer: isLegato ? '레가토(부드럽게)' : '스타카토(짧게)',
+    options: shuffle(['레가토(부드럽게)','스타카토(짧게)']),
+    prompt: isLegato ? '이음줄이 있을 때의 연주법은?' : '음표 위에 점이 있을 때의 연주법은?' };
+}
+
+// --- 스타카토 ---
+function genStaccatoIntroQ() {
+  const r = Math.random();
+  if (r < 0.4) {
+    // 스타카토 뜻
+    const opts = shuffle(['짧게 끊어서','길게 늘여서','점점 세게','점점 여리게']);
+    return { type:'staccato-meaning', answer:'짧게 끊어서', options:opts,
+      prompt:'스타카토(staccato)의 뜻은?' };
+  } else if (r < 0.7) {
+    // 기호 맞추기
+    const symbols = [
+      {name:'스타카토',symbol:'•',desc:'음표 위/아래 점'},
+      {name:'악센트',symbol:'>',desc:'그 음을 세게'},
+      {name:'테누토',symbol:'ㅡ',desc:'충분히 길게'},
+      {name:'페르마타',symbol:'𝄐',desc:'늘임표 — 길게 늘여서'},
+    ];
+    const chosen = rand(symbols);
+    const opts = shuffle(symbols).slice(0,4).map(s=>s.name);
+    if(!opts.includes(chosen.name)) opts[0]=chosen.name;
+    return { type:'articulation-id', symbol:chosen, answer:chosen.name, options:shuffle(opts),
+      prompt:`이 기호 "${chosen.symbol}" 는?`, sub:chosen.desc };
+  } else {
+    // 스타카토 vs 레가토
+    const isStacc = Math.random()>0.5;
+    return { type:'staccato-concept', answer: isStacc ? '스타카토' : '레가토',
+      options: shuffle(['스타카토','레가토']),
+      prompt: isStacc ? '짧고 가볍게 끊어서 연주하는 것은?' : '부드럽고 매끄럽게 이어서 연주하는 것은?' };
+  }
+}
+
+function genStaccatoEarQ() {
+  const isStacc = Math.random()>0.5;
+  return { type:'staccato-ear', isStaccato:isStacc,
+    answer: isStacc ? '스타카토 (짧게)' : '레가토 (길게)',
+    options: shuffle(['스타카토 (짧게)','레가토 (길게)']),
+    prompt: '이 연주는 어떤 방식일까요? 🎧' };
+}
+
+// --- 리듬 퀴즈 ---
+function genRhythmQuizQ() {
+  const r = Math.random();
+  if (r < 0.4) {
+    // 4/4박자에서 빈칸 채우기: _ + 나머지 = 4박
+    const given = rand([{name:'2분음표',beats:2},{name:'4분음표',beats:1},{name:'온음표',beats:4}]);
+    const remaining = 4 - given.beats;
+    if (remaining <= 0) {
+      return { type:'rhythm-fill', answer:'없어요 (이미 4박)', options:shuffle(['4분음표','2분음표','없어요 (이미 4박)','8분음표']),
+        prompt:`4/4박자에서 ${given.name}(${given.beats}박) 다음에\n뭐가 필요할까요?` };
+    }
+    const ansName = remaining===1?'4분음표':remaining===2?'2분음표':remaining===3?'점2분음표':'없어요';
+    const opts = shuffle(['4분음표','2분음표','점2분음표','8분음표']).slice(0,4);
+    if(!opts.includes(ansName)) opts[0]=ansName;
+    return { type:'rhythm-fill', answer:ansName, options:shuffle(opts),
+      prompt:`4/4박자: ${given.name}(${given.beats}박) + ? = 4박\n빈칸에 들어갈 음표는?` };
+  } else if (r < 0.7) {
+    // 총 박자 계산
+    const combos = [
+      {notes:'♩ + ♩ + ♩ + ♩',total:'4박'},
+      {notes:'𝅗𝅥 + 𝅗𝅥',total:'4박'},
+      {notes:'𝅗𝅥 + ♩ + ♩',total:'4박'},
+      {notes:'♩ + ♩ + 𝅗𝅥',total:'4박'},
+      {notes:'♩ + ♪ + ♪',total:'2박'},
+      {notes:'𝅝',total:'4박'},
+      {notes:'♩ + ♩',total:'2박'},
+      {notes:'♩ + ♩ + ♩',total:'3박'},
+    ];
+    const chosen = rand(combos);
+    const opts = shuffle(['2박','3박','4박','5박']).slice(0,4);
+    if(!opts.includes(chosen.total)) opts[0]=chosen.total;
+    return { type:'rhythm-total', answer:chosen.total, options:shuffle(opts),
+      prompt:`${chosen.notes}\n= 총 몇 박?` };
+  } else {
+    // 박자표 문제
+    const meters = [
+      {sign:'4/4',meaning:'한 마디에 4분음표 4개',beats:4},
+      {sign:'3/4',meaning:'한 마디에 4분음표 3개',beats:3},
+      {sign:'2/4',meaning:'한 마디에 4분음표 2개',beats:2},
+      {sign:'6/8',meaning:'한 마디에 8분음표 6개',beats:6},
+    ];
+    const chosen = rand(meters);
+    const opts = shuffle(meters).slice(0,4).map(m=>m.meaning);
+    if(!opts.includes(chosen.meaning)) opts[0]=chosen.meaning;
+    return { type:'meter', answer:chosen.meaning, options:shuffle(opts),
+      prompt:`"${chosen.sign}" 박자의 뜻은?` };
+  }
 }
 
 // --- 음표 이름 맞추기 ---
@@ -831,6 +983,29 @@ function showQuestion() {
     html += `<canvas class="q-staff" id="q-canvas" width="200" height="160" style="max-width:200px"></canvas>`;
   }
 
+  // 이음줄/붙임줄 비주얼
+  if (q.type === 'slur-visual') {
+    html += `<canvas class="q-staff" id="q-canvas" width="400" height="160"></canvas>`;
+  }
+  if (q.type === 'tie-calc') {
+    html += `<div style="font-size:15px;color:var(--blue);margin-bottom:12px;background:#f0f7ff;padding:12px;border-radius:12px">🔗 ${q.combo.a}(${q.combo.aBeats}박) ＋ ${q.combo.b}(${q.combo.bBeats}박)</div>`;
+  }
+  if (q.info) {
+    html += `<div class="q-sub" style="background:#f9f9f9;padding:8px 12px;border-radius:10px;margin-bottom:12px;font-size:13px">💡 ${q.info}</div>`;
+  }
+
+  // 스타카토 기호
+  if (q.type === 'articulation-id') {
+    html += `<div style="font-size:56px;margin-bottom:8px">${q.symbol.symbol}</div>`;
+    if(q.sub) html += `<div class="q-sub">${q.sub}</div>`;
+  }
+
+  // 스타카토 청음
+  if (q.type === 'staccato-ear') {
+    html += `<button class="play-btn" onclick="playStaccatoEar()">🔊</button>`;
+    html += `<div class="q-sub">들어보고 연주 방식을 맞춰보세요</div>`;
+  }
+
   // 샵/플랫 기호
   if (q.type === 'accidental-symbol' || q.type === 'accidental-meaning') {
     html += `<div style="font-size:64px;margin-bottom:12px">${q.accidental.symbol}</div>`;
@@ -919,6 +1094,8 @@ function showQuestion() {
     if (q.type === 'rest-id') drawRestQ(q);
     if (q.type === 'accidental-read') drawAccidentalQ(q);
     if (q.type === 'accidental-ear') setTimeout(playAccidentalEar, 300);
+    if (q.type === 'slur-visual') drawSlurVisual(q);
+    if (q.type === 'staccato-ear') setTimeout(playStaccatoEar, 400);
   }, 50);
 }
 
@@ -1016,6 +1193,55 @@ function playMelodyQ() {
     q.melody.forEach((note,i) => {
       synth.triggerAttackRelease(NOTE_FREQ[note],'8n',now+i*0.4);
     });
+  });
+}
+
+// --- 이음줄/붙임줄 그리기 ---
+function drawSlurVisual(q) {
+  const c=document.getElementById('q-canvas'); if(!c) return;
+  const ctx=c.getContext('2d');ctx.clearRect(0,0,400,160);
+  ctx.strokeStyle='#bbb';ctx.lineWidth=1.5;
+  for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(40,35+i*15);ctx.lineTo(360,35+i*15);ctx.stroke();}
+  ctx.font='56px serif';ctx.fillStyle='#6A9FC5';ctx.fillText('𝄞',8,82);
+
+  if(q.isTie) {
+    // 붙임줄: 같은 높이 두 음
+    const y=noteY('E4');
+    [150,250].forEach(x=>{
+      ctx.fillStyle='#333';ctx.beginPath();ctx.ellipse(x,y,11,8,-0.2,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle='#333';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+10,y);ctx.lineTo(x+10,y-35);ctx.stroke();
+    });
+    // 곡선
+    ctx.strokeStyle='#e53935';ctx.lineWidth=2.5;ctx.beginPath();
+    ctx.moveTo(155,y+12);ctx.quadraticCurveTo(200,y+30,245,y+12);ctx.stroke();
+  } else {
+    // 이음줄: 다른 높이 두 음
+    const notes=[{x:140,f:'E4'},{x:200,f:'G4'},{x:260,f:'F4'}];
+    notes.forEach(n=>{
+      const y=noteY(n.f);
+      ctx.fillStyle='#333';ctx.beginPath();ctx.ellipse(n.x,y,10,7,-0.2,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle='#333';ctx.lineWidth=1.8;ctx.beginPath();ctx.moveTo(n.x+9,y);ctx.lineTo(n.x+9,y-30);ctx.stroke();
+    });
+    // 곡선
+    ctx.strokeStyle='#e53935';ctx.lineWidth=2.5;ctx.beginPath();
+    const y0=noteY(notes[0].f), y2=noteY(notes[2].f);
+    ctx.moveTo(145,y0-8);ctx.quadraticCurveTo(200,Math.min(y0,noteY('G4'))-25,255,y2-8);ctx.stroke();
+  }
+}
+
+// --- 스타카토 청음 ---
+function playStaccatoEar() {
+  const q=lessonState.questions[lessonState.current];
+  ensureTone().then(()=>{
+    const now=Tone.now();
+    const notes=['C4','E4','G4','C5'];
+    if(q.isStaccato) {
+      // 짧게 끊어서
+      notes.forEach((n,i)=>synth.triggerAttackRelease(n,'32n',now+i*0.25));
+    } else {
+      // 길게 이어서
+      notes.forEach((n,i)=>synth.triggerAttackRelease(n,'4n',now+i*0.4));
+    }
   });
 }
 
