@@ -1049,8 +1049,8 @@ function showQuestion() {
   if (q.type === 'rhythm-tap') {
     html += `<canvas class="q-staff" id="q-canvas" width="400" height="120" style="max-width:400px;height:120px"></canvas>`;
     html += `<div class="q-sub">패턴: ${q.pattern.name} (총 ${q.pattern.beats.reduce((a,b)=>a+b,0)}박)</div>`;
-    html += `<div class="rhythm-tap" id="tap-area" onclick="handleTap()">👏 여기를 탭 하세요!</div>`;
-    html += `<div class="q-sub" id="tap-status">리듬에 맞춰 탭 해보세요</div>`;
+    html += `<div class="rhythm-tap" id="tap-area">👏 꾹 눌러보세요!</div>`;
+    html += `<div class="q-sub" id="tap-status">박자 길이만큼 꾹 누르고 있다가 떼세요</div>`;
   }
 
   // 음표 길이 비교
@@ -1418,105 +1418,201 @@ let tapState = null;
 function initTap(q) {
   const beats = q.pattern.beats;
   const totalBeats = beats.reduce((a,b)=>a+b,0);
-  tapState = { beats, totalBeats, expectedTaps:beats.length, taps:[], startTime:null, done:false,
-    noteTypes: q.pattern.noteTypes };
+  const BPM_MS = 500; // 1박 = 500ms
+  tapState = {
+    beats, totalBeats, expectedTaps: beats.length, completed: 0,
+    noteTypes: q.pattern.noteTypes, done: false,
+    pressing: false, pressStart: 0, holdRequired: 0,
+    animFrame: null, fillPct: 0, BPM_MS,
+    results: [] // 'perfect','good','miss' per note
+  };
+
+  // 이벤트 연결
+  const el = document.getElementById('tap-area');
+  el.onmousedown = el.ontouchstart = (e) => { e.preventDefault(); tapPressStart(); };
+  el.onmouseup = el.onmouseleave = el.ontouchend = el.ontouchcancel = (e) => { e.preventDefault(); tapPressEnd(); };
+
   updateTapCanvas();
 }
+
+function tapPressStart() {
+  if (!tapState || tapState.done || tapState.pressing) return;
+  const idx = tapState.completed;
+  if (idx >= tapState.expectedTaps) return;
+
+  tapState.pressing = true;
+  tapState.pressStart = performance.now();
+  tapState.holdRequired = tapState.beats[idx] * tapState.BPM_MS;
+  tapState.fillPct = 0;
+
+  const el = document.getElementById('tap-area');
+  el.style.transform = 'scale(0.95)';
+  el.style.background = 'linear-gradient(135deg,#e08080,#d06060)';
+  el.textContent = '🎵 누르는 중...';
+
+  // 소리 시작
+  ensureTone().then(() => {
+    const noteNames = ['C4','E4','G4','C5','E5','G5','C6'];
+    const freq = noteNames[tapState.completed % noteNames.length];
+    synth.triggerAttack(freq);
+  });
+
+  // 애니메이션 루프
+  function animFill() {
+    if (!tapState || !tapState.pressing) return;
+    const elapsed = performance.now() - tapState.pressStart;
+    tapState.fillPct = Math.min(1, elapsed / tapState.holdRequired);
+    updateTapCanvas();
+
+    // 꽉 찼으면 자동 완료
+    if (tapState.fillPct >= 1) {
+      tapPressEnd();
+      return;
+    }
+    tapState.animFrame = requestAnimationFrame(animFill);
+  }
+  tapState.animFrame = requestAnimationFrame(animFill);
+}
+
+function tapPressEnd() {
+  if (!tapState || !tapState.pressing) return;
+  tapState.pressing = false;
+  if (tapState.animFrame) { cancelAnimationFrame(tapState.animFrame); tapState.animFrame = null; }
+
+  // 소리 끄기
+  ensureTone().then(() => synth.triggerRelease());
+
+  const el = document.getElementById('tap-area');
+  el.style.transform = '';
+  el.style.background = '';
+
+  const pct = tapState.fillPct;
+  let result;
+  if (pct >= 0.85) {
+    result = 'perfect';
+    playCorrectSfx();
+  } else if (pct >= 0.5) {
+    result = 'good';
+    playCorrectSfx();
+  } else {
+    result = 'miss';
+    playWrongSfx();
+  }
+
+  tapState.results.push(result);
+  tapState.completed++;
+  tapState.fillPct = 0;
+  updateTapCanvas();
+
+  const remaining = tapState.expectedTaps - tapState.completed;
+  const statusEl = document.getElementById('tap-status');
+
+  if (result === 'perfect') statusEl.textContent = remaining > 0 ? `완벽! 🎉 남은 음표: ${remaining}개` : '완벽! 🎉';
+  else if (result === 'good') statusEl.textContent = remaining > 0 ? `좋아요! 👍 남은 음표: ${remaining}개` : '좋아요! 👍';
+  else statusEl.textContent = remaining > 0 ? `너무 짧아요 😅 남은 음표: ${remaining}개` : '다음에 더 잘해봐요!';
+
+  el.textContent = remaining > 0 ? '👏 꾹 눌러보세요!' : '🎉 완료!';
+
+  if (tapState.completed >= tapState.expectedTaps) {
+    tapState.done = true;
+    const perfects = tapState.results.filter(r=>r==='perfect').length;
+    const goods = tapState.results.filter(r=>r==='good').length;
+    const isPass = (perfects + goods) >= tapState.expectedTaps * 0.5;
+    setTimeout(() => {
+      if (isPass) lessonState.correct++;
+      lessonState.answered = true;
+      showResultBar(isPass,
+        isPass ? `멋져요! Perfect ${perfects}개, Good ${goods}개 🎉`
+               : '다음엔 더 오래 눌러보세요 💪');
+    }, 600);
+  }
+}
+
 function updateTapCanvas() {
-  const c=document.getElementById('q-canvas'); if(!c||!tapState) return;
-  const ctx=c.getContext('2d'); ctx.clearRect(0,0,400,120);
+  const c = document.getElementById('q-canvas'); if (!c || !tapState) return;
+  const ctx = c.getContext('2d'); ctx.clearRect(0, 0, 400, 120);
   const types = tapState.noteTypes;
   const spacing = 320 / types.length;
-  const tapped = tapState.taps.length;
+  const done = tapState.completed;
+  const pressing = tapState.pressing;
 
   types.forEach((type, i) => {
-    const cx = 60 + i * spacing, cy = 65;
-    const done = i < tapped;
+    const cx = 60 + i * spacing, cy = 55;
+    const isDone = i < done;
+    const isCurrent = i === done && !tapState.done;
+    const result = tapState.results[i];
 
-    // 배경 원 (완료된 음표 뒤에 초록 원)
-    if (done) {
-      ctx.fillStyle = 'rgba(107,203,119,0.2)';
-      ctx.beginPath(); ctx.arc(cx, cy-5, 32, 0, Math.PI*2); ctx.fill();
+    // 원형 진행 표시 (현재 누르고 있는 음표)
+    if (isCurrent && pressing) {
+      const pct = tapState.fillPct;
+      // 배경 원
+      ctx.strokeStyle = '#eee'; ctx.lineWidth = 5;
+      ctx.beginPath(); ctx.arc(cx, cy, 34, 0, Math.PI * 2); ctx.stroke();
+      // 진행 원호
+      const color = pct >= 0.85 ? '#6bcb77' : pct >= 0.5 ? '#D4C255' : '#F5B5B0';
+      ctx.strokeStyle = color; ctx.lineWidth = 5; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.arc(cx, cy, 34, -Math.PI/2, -Math.PI/2 + Math.PI*2*pct); ctx.stroke();
+      ctx.lineCap = 'butt';
     }
 
-    // 다음 탭할 음표 하이라이트
-    if (i === tapped && !tapState.done) {
+    // 완료된 것 배경
+    if (isDone) {
+      const bg = result==='perfect' ? 'rgba(107,203,119,0.2)' : result==='good' ? 'rgba(212,194,85,0.2)' : 'rgba(245,181,176,0.2)';
+      ctx.fillStyle = bg;
+      ctx.beginPath(); ctx.arc(cx, cy, 32, 0, Math.PI*2); ctx.fill();
+    }
+
+    // 다음 음표 하이라이트
+    if (isCurrent && !pressing) {
       ctx.save();
-      ctx.shadowColor = '#6A9FC5'; ctx.shadowBlur = 15;
-      ctx.strokeStyle = '#6A9FC5'; ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.arc(cx, cy-5, 32, 0, Math.PI*2); ctx.stroke();
+      ctx.shadowColor = '#6A9FC5'; ctx.shadowBlur = 12;
+      ctx.strokeStyle = '#6A9FC5'; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.arc(cx, cy, 34, 0, Math.PI*2); ctx.stroke();
       ctx.restore();
     }
 
-    ctx.fillStyle = done ? '#6bcb77' : (i === tapped ? '#6A9FC5' : '#333');
-    ctx.strokeStyle = ctx.fillStyle;
+    // 음표 색상
+    const noteColor = isDone ? (result==='perfect'?'#6bcb77':result==='good'?'#D4C255':'#ef5350')
+                    : isCurrent ? '#6A9FC5' : '#bbb';
+    ctx.fillStyle = noteColor; ctx.strokeStyle = noteColor;
 
+    // 음표 그리기
     if (type==='whole') {
       ctx.lineWidth=3; ctx.beginPath(); ctx.ellipse(cx,cy,18,13,-0.2,0,Math.PI*2); ctx.stroke();
     } else if (type==='half') {
       ctx.lineWidth=3; ctx.beginPath(); ctx.ellipse(cx,cy,16,11,-0.2,0,Math.PI*2); ctx.stroke();
-      ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(cx+15,cy); ctx.lineTo(cx+15,cy-40); ctx.stroke();
+      ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(cx+15,cy); ctx.lineTo(cx+15,cy-35); ctx.stroke();
     } else if (type==='quarter') {
       ctx.beginPath(); ctx.ellipse(cx,cy,16,11,-0.2,0,Math.PI*2); ctx.fill();
-      ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(cx+15,cy); ctx.lineTo(cx+15,cy-40); ctx.stroke();
+      ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(cx+15,cy); ctx.lineTo(cx+15,cy-35); ctx.stroke();
     } else if (type==='eighth') {
       ctx.beginPath(); ctx.ellipse(cx,cy,16,11,-0.2,0,Math.PI*2); ctx.fill();
-      ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(cx+15,cy); ctx.lineTo(cx+15,cy-40); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(cx+15,cy-40); ctx.quadraticCurveTo(cx+30,cy-30,cx+20,cy-18); ctx.stroke();
+      ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(cx+15,cy); ctx.lineTo(cx+15,cy-35); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx+15,cy-35); ctx.quadraticCurveTo(cx+28,cy-25,cx+18,cy-15); ctx.stroke();
     }
 
-    // 체크 표시
-    if (done) {
-      ctx.fillStyle='#6bcb77'; ctx.font='bold 16px sans-serif'; ctx.textAlign='center';
-      ctx.fillText('✓', cx, cy+28); ctx.textAlign='start';
+    // 라벨
+    ctx.font = 'bold 12px sans-serif'; ctx.textAlign = 'center';
+    if (isDone) {
+      ctx.fillStyle = result==='perfect'?'#6bcb77':result==='good'?'#D4C255':'#ef5350';
+      ctx.fillText(result==='perfect'?'Perfect!':result==='good'?'Good':'Miss', cx, cy+30);
     } else {
-      ctx.fillStyle='#ccc'; ctx.font='12px sans-serif'; ctx.textAlign='center';
-      ctx.fillText(tapState.beats[i]+'박', cx, cy+28); ctx.textAlign='start';
+      ctx.fillStyle = isCurrent ? '#6A9FC5' : '#ccc';
+      ctx.fillText(tapState.beats[i]+'박', cx, cy+30);
     }
+    ctx.textAlign = 'start';
   });
 
-  // 진행 바
-  const pct = tapped / types.length;
-  const barY = 110, barW = 320, barH = 6;
+  // 하단 진행 바
+  const pct = done / types.length;
+  const barY = 108, barW = 320, barH = 6;
   ctx.fillStyle='#eee';
-  ctx.beginPath(); ctx.roundRect(40, barY, barW, barH, 3); ctx.fill();
+  ctx.beginPath(); ctx.roundRect(40,barY,barW,barH,3); ctx.fill();
   if (pct > 0) {
     const grad = ctx.createLinearGradient(40,0,40+barW*pct,0);
     grad.addColorStop(0,'#6bcb77'); grad.addColorStop(1,'#4caf50');
     ctx.fillStyle = grad;
-    ctx.beginPath(); ctx.roundRect(40, barY, barW*pct, barH, 3); ctx.fill();
-  }
-}
-
-function handleTap() {
-  if (!tapState || tapState.done) return;
-  const now = performance.now();
-  if (!tapState.startTime) tapState.startTime = now;
-  tapState.taps.push(now);
-
-  // 탭 버튼 애니메이션
-  const el = document.getElementById('tap-area');
-  el.style.transform = 'scale(0.92)';
-  el.style.background = 'linear-gradient(135deg,#e08080,#d06060)';
-  setTimeout(()=>{ el.style.transform=''; el.style.background=''; },150);
-  playCorrectSfx();
-
-  // 캔버스 업데이트
-  updateTapCanvas();
-
-  const remaining = tapState.expectedTaps - tapState.taps.length;
-  document.getElementById('tap-status').textContent = remaining > 0
-    ? `남은 탭: ${remaining}개`
-    : '완료! 🎉';
-
-  if (tapState.taps.length >= tapState.expectedTaps) {
-    tapState.done = true;
-    updateTapCanvas();
-    setTimeout(()=>{
-      lessonState.correct++;
-      lessonState.answered = true;
-      showResultBar(true, '잘 따라했어요! 👏🎉');
-    }, 500);
+    ctx.beginPath(); ctx.roundRect(40,barY,barW*pct,barH,3); ctx.fill();
   }
 }
 
