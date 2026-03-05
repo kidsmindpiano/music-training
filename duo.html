@@ -406,7 +406,7 @@ function load() {
 }
 function save() { localStorage.setItem(STORE_KEY, JSON.stringify(DATA)); }
 
-function getSkillState(id) { return DATA.skills[id] || { lessonsCompleted:0, unlocked: id===SKILLS[0].id }; }
+function getSkillState(id) { return DATA.skills[id] || { lessonsCompleted:0, unlocked: true }; }
 function setSkillState(id, s) { DATA.skills[id] = s; save(); }
 
 let synth, toneStarted = false;
