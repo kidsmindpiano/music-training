@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🎵 뮤직 마스터</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+<style>
+:root {
+  --blue: #6A9FC5; --pink: #F5B5B0; --yellow: #D4C255; --green: #6bcb77;
+  --red: #ef5350; --bg: #f5f5f5; --card: #fff; --text: #333; --sub: #999;
+  --shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+/* ===== SCREENS ===== */
+.screen { display:none; min-height:100vh; }
+.screen.active { display:block; }
+
+/* ===== TOP BAR ===== */
+.top-bar { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:var(--card); border-bottom:1px solid #eee; position:sticky; top:0; z-index:50; }
+.top-bar .streak { display:flex; align-items:center; gap:4px; font-weight:700; color:#ff9800; font-size:15px; }
+.top-bar .xp { display:flex; align-items:center; gap:4px; font-weight:700; color:var(--blue); font-size:15px; }
+.top-bar .hearts { display:flex; align-items:center; gap:2px; font-size:15px; }
+.top-bar .logo { height:32px; border-radius:8px; }
+
+/* ===== HOME / SKILL TREE ===== */
+.home-header { text-align:center; padding:20px 16px 10px; }
+.home-header h2 { font-size:20px; color:var(--blue); }
+.home-header p { font-size:13px; color:var(--sub); margin-top:4px; }
+
+.daily-box { margin:12px 16px; padding:14px 18px; background:linear-gradient(135deg,#fff9e6,#fff3cc); border-radius:16px; display:flex; align-items:center; gap:12px; }
+.daily-box .fire { font-size:32px; }
+.daily-box .info h4 { font-size:14px; color:#e65100; }
+.daily-box .info p { font-size:12px; color:#bf8c00; margin:0; }
+.daily-box .goal-bar { flex:1; height:8px; background:#ffe0b2; border-radius:4px; overflow:hidden; margin-top:4px; }
+.daily-box .goal-fill { height:100%; background:#ff9800; border-radius:4px; transition:width .5s; }
+
+.path { display:flex; flex-direction:column; align-items:center; padding:20px 0 40px; gap:0; }
+.path-node { position:relative; width:72px; height:72px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:28px; cursor:pointer; transition:all .2s; border:4px solid; z-index:2; }
+.path-node:hover { transform:scale(1.1); }
+.path-node.locked { border-color:#ddd; background:#f0f0f0; cursor:not-allowed; opacity:0.5; }
+.path-node.available { border-color:var(--blue); background:#e8f2fa; }
+.path-node.completed { border-color:var(--green); background:#e8f5e9; }
+.path-node.current { border-color:var(--blue); background:var(--blue); animation:pulse 2s infinite; }
+.path-node .crown { position:absolute; top:-12px; font-size:18px; }
+.path-connector { width:4px; height:32px; background:#ddd; z-index:1; }
+.path-connector.done { background:var(--green); }
+.path-node-label { font-size:12px; color:var(--sub); margin-top:-4px; margin-bottom:8px; font-weight:600; }
+
+@keyframes pulse { 0%,100%{box-shadow:0 0 0 0 rgba(106,159,197,0.4)} 50%{box-shadow:0 0 0 12px rgba(106,159,197,0)} }
+
+/* ===== LESSON SCREEN ===== */
+.lesson-bar { display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--card); border-bottom:1px solid #eee; }
+.lesson-bar .close-btn { font-size:24px; color:#999; cursor:pointer; background:none; border:none; }
+.lesson-progress { flex:1; height:10px; background:#eee; border-radius:5px; overflow:hidden; }
+.lesson-progress-fill { height:100%; background:var(--green); border-radius:5px; transition:width .4s; }
+.lesson-hearts { display:flex; gap:2px; font-size:18px; }
+
+.lesson-content { max-width:500px; margin:0 auto; padding:20px 16px; }
+.question-area { min-height:300px; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+
+.q-prompt { font-size:18px; font-weight:700; text-align:center; margin-bottom:20px; color:var(--text); }
+.q-sub { font-size:14px; color:var(--sub); text-align:center; margin-bottom:16px; }
+
+/* Staff display */
+.q-staff { width:100%; max-width:400px; height:160px; background:#fafafa; border-radius:16px; margin-bottom:16px; }
+
+/* Answer options */
+.options { display:grid; gap:10px; width:100%; max-width:400px; }
+.options.cols-2 { grid-template-columns:1fr 1fr; }
+.options.cols-3 { grid-template-columns:1fr 1fr 1fr; }
+.options.cols-4 { grid-template-columns:1fr 1fr 1fr 1fr; }
+.opt-btn { padding:16px; border:2px solid #e0e0e0; border-radius:14px; background:var(--card); font-size:18px; font-weight:700; cursor:pointer; transition:all .2s; text-align:center; }
+.opt-btn:hover { border-color:var(--blue); background:#f0f7ff; }
+.opt-btn:active { transform:scale(0.96); }
+.opt-btn.selected { border-color:var(--blue); background:#e3f0ff; }
+.opt-btn.correct { border-color:var(--green); background:#e8f5e9; color:var(--green); animation:popIn .3s; }
+.opt-btn.wrong { border-color:var(--red); background:#ffebee; color:var(--red); animation:shake .3s; }
+
+@keyframes popIn { 0%{transform:scale(1)} 50%{transform:scale(1.05)} 100%{transform:scale(1)} }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+/* Play button for ear training */
+.play-btn { width:80px; height:80px; border-radius:50%; background:var(--blue); border:none; color:#fff; font-size:32px; cursor:pointer; margin-bottom:20px; transition:all .2s; box-shadow:0 4px 15px rgba(106,159,197,0.3); }
+.play-btn:hover { transform:scale(1.1); }
+.play-btn:active { transform:scale(0.95); }
+
+/* Tap area for rhythm */
+.rhythm-tap { width:100%; max-width:400px; height:80px; border-radius:20px; background:linear-gradient(135deg,var(--pink),#e8a0a0); display:flex; align-items:center; justify-content:center; font-size:20px; color:#fff; font-weight:700; cursor:pointer; margin:12px 0; transition:all .1s; user-select:none; }
+.rhythm-tap:active { transform:scale(0.96); background:linear-gradient(135deg,#e08080,var(--pink)); }
+
+/* Bottom result bar */
+.result-bar { position:fixed; bottom:0; left:0; right:0; padding:16px 20px; z-index:40; display:flex; align-items:center; justify-content:space-between; transition:all .3s; transform:translateY(100%); }
+.result-bar.show { transform:translateY(0); }
+.result-bar.correct-bar { background:#d4edda; border-top:2px solid var(--green); }
+.result-bar.wrong-bar { background:#f8d7da; border-top:2px solid var(--red); }
+.result-bar .result-text { font-weight:700; font-size:16px; }
+.result-bar.correct-bar .result-text { color:var(--green); }
+.result-bar.wrong-bar .result-text { color:var(--red); }
+.continue-btn { padding:12px 28px; border:none; border-radius:12px; font-size:16px; font-weight:700; color:#fff; cursor:pointer; }
+.result-bar.correct-bar .continue-btn { background:var(--green); }
+.result-bar.wrong-bar .continue-btn { background:var(--red); }
+
+/* ===== LESSON COMPLETE ===== */
+.complete-screen { text-align:center; padding:40px 20px; }
+.complete-screen .trophy { font-size:80px; margin-bottom:16px; }
+.complete-screen h2 { font-size:26px; margin-bottom:8px; }
+.complete-screen p { color:var(--sub); margin-bottom:24px; }
+.xp-earned { display:inline-block; background:linear-gradient(135deg,var(--blue),#5a8fb5); color:#fff; padding:12px 28px; border-radius:14px; font-size:20px; font-weight:800; margin-bottom:20px; }
+.complete-stats { display:flex; justify-content:center; gap:20px; margin-bottom:28px; }
+.complete-stat { text-align:center; }
+.complete-stat .val { font-size:24px; font-weight:800; color:var(--blue); }
+.complete-stat .lbl { font-size:11px; color:var(--sub); }
+.home-btn { padding:14px 36px; border:none; border-radius:14px; font-size:17px; font-weight:700; cursor:pointer; background:var(--blue); color:#fff; transition:all .2s; }
+.home-btn:hover { transform:scale(1.05); }
+
+/* ===== FAIL SCREEN ===== */
+.fail-screen { text-align:center; padding:40px 20px; }
+.fail-screen .sad { font-size:80px; margin-bottom:16px; }
+.fail-screen h2 { font-size:24px; margin-bottom:8px; }
+.fail-screen p { color:var(--sub); margin-bottom:24px; }
+.retry-btn { padding:14px 36px; border:none; border-radius:14px; font-size:17px; font-weight:700; cursor:pointer; background:var(--red); color:#fff; margin-right:8px; }
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:400px) {
+  .path-node { width:62px; height:62px; font-size:24px; }
+  .opt-btn { padding:12px; font-size:16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== HOME SCREEN ===== -->
+<div id="screen-home" class="screen active">
+  <div class="top-bar">
+    <img src="logo.jpg" class="logo" alt="logo">
+    <div class="streak"><span>🔥</span><span id="home-streak">0</span></div>
+    <div class="xp"><span>⚡</span><span id="home-xp">0</span> XP</div>
+  </div>
+
+  <div class="home-header">
+    <h2>🎵 뮤직 마스터</h2>
+    <p>매일 조금씩 음악 실력을 키워요!</p>
+  </div>
+
+  <div class="daily-box">
+    <div class="fire">🔥</div>
+    <div class="info" style="flex:1">
+      <h4 id="daily-title">오늘의 목표</h4>
+      <p id="daily-desc">레슨 1개 완료하기</p>
+      <div class="goal-bar"><div class="goal-fill" id="daily-fill" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <div class="path" id="skill-path"></div>
+
+  <div style="text-align:center;padding:0 16px 30px">
+    <a href="play.html" style="color:var(--blue);font-size:14px">🎮 미니게임 하러가기</a>
+  </div>
+</div>
+
+<!-- ===== LESSON SCREEN ===== -->
+<div id="screen-lesson" class="screen">
+  <div class="lesson-bar">
+    <button class="close-btn" onclick="exitLesson()">✕</button>
+    <div class="lesson-progress"><div class="lesson-progress-fill" id="lesson-progress"></div></div>
+    <div class="lesson-hearts" id="lesson-hearts"></div>
+  </div>
+  <div class="lesson-content">
+    <div class="question-area" id="question-area"></div>
+  </div>
+  <div class="result-bar" id="result-bar">
+    <div class="result-text" id="result-text"></div>
+    <button class="continue-btn" onclick="nextQuestion()">계속</button>
+  </div>
+</div>
+
+<!-- ===== COMPLETE SCREEN ===== -->
+<div id="screen-complete" class="screen">
+  <div class="complete-screen">
+    <div class="trophy">🏆</div>
+    <h2>레슨 완료!</h2>
+    <p id="complete-msg"></p>
+    <div class="xp-earned" id="complete-xp">+20 XP</div>
+    <div class="complete-stats">
+      <div class="complete-stat"><div class="val" id="c-correct">0</div><div class="lbl">정답</div></div>
+      <div class="complete-stat"><div class="val" id="c-total">0</div><div class="lbl">문제</div></div>
+      <div class="complete-stat"><div class="val" id="c-accuracy">0%</div><div class="lbl">정답률</div></div>
+    </div>
+    <button class="home-btn" onclick="goHome()">계속하기</button>
+  </div>
+</div>
+
+<!-- ===== FAIL SCREEN ===== -->
+<div id="screen-fail" class="screen">
+  <div class="fail-screen">
+    <div class="sad">😢</div>
+    <h2>하트를 다 잃었어요</h2>
+    <p>괜찮아요! 다시 도전해봐요 💪</p>
+    <button class="retry-btn" onclick="retryLesson()">다시 도전</button>
+    <button class="home-btn" onclick="goHome()">홈으로</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const NOTE_NAMES = ['도','레','미','파','솔','라','시'];
+const NOTE_ENG = {도:'C',레:'D',미:'E',파:'F',솔:'G',라:'A',시:'B'};
+const NOTE_FREQ = {도:'C4',레:'D4',미:'E4',파:'F4',솔:'G4',라:'A4',시:'B4'};
+const ALL_FREQ = ['C4','D4','E4','F4','G4','A4','B4'];
+
+// SKILL TREE — 각 노드가 하나의 스킬 (여러 레슨 포함)
+const SKILLS = [
+  { id:'note1', icon:'🎵', label:'도레미', desc:'도, 레, 미 배우기',
+    lessons: [
+      { type:'mixed', notePool:['도','레','미'], qCount:8 },
+      { type:'mixed', notePool:['도','레','미'], qCount:10 },
+    ]},
+  { id:'note2', icon:'🎶', label:'파솔', desc:'파, 솔 추가',
+    lessons: [
+      { type:'mixed', notePool:['도','레','미','파','솔'], qCount:10 },
+      { type:'mixed', notePool:['도','레','미','파','솔'], qCount:12 },
+    ]},
+  { id:'note3', icon:'🌟', label:'라시', desc:'모든 음 배우기',
+    lessons: [
+      { type:'mixed', notePool:['도','레','미','파','솔','라','시'], qCount:10 },
+      { type:'mixed', notePool:['도','레','미','파','솔','라','시'], qCount:12 },
+    ]},
+  { id:'rhythm1', icon:'🥁', label:'리듬 기초', desc:'4분음표와 쉼표',
+    lessons: [
+      { type:'rhythm', qCount:8 },
+      { type:'rhythm', qCount:10 },
+    ]},
+  { id:'ear1', icon:'👂', label:'청음 입문', desc:'소리로 음 맞추기',
+    lessons: [
+      { type:'mixed', notePool:['도','레','미','파','솔'], qCount:10, earFocus:true },
+      { type:'mixed', notePool:['도','레','미','파','솔','라','시'], qCount:12, earFocus:true },
+    ]},
+  { id:'melody1', icon:'🎤', label:'멜로디', desc:'멜로디 순서 맞추기',
+    lessons: [
+      { type:'melody', notePool:['도','레','미','파','솔'], qCount:8 },
+      { type:'melody', notePool:['도','레','미','파','솔','라','시'], qCount:10 },
+    ]},
+  { id:'note4', icon:'🎹', label:'영어 계이름', desc:'C D E F G A B',
+    lessons: [
+      { type:'mixed', notePool:['도','레','미','파','솔','라','시'], qCount:10, engMode:true },
+      { type:'mixed', notePool:['도','레','미','파','솔','라','시'], qCount:12, engMode:true },
+    ]},
+  { id:'master', icon:'👑', label:'마스터', desc:'모든 실력 종합',
+    lessons: [
+      { type:'mixed', notePool:['도','레','미','파','솔','라','시'], qCount:15, earFocus:true, engMode:true },
+    ]},
+];
+
+// ============================================================
+// STATE
+// ============================================================
+const STORE_KEY = 'music_duo_v1';
+let DATA;
+function load() {
+  try { DATA = JSON.parse(localStorage.getItem(STORE_KEY)); } catch(e){}
+  if (!DATA) DATA = { xp:0, streak:0, lastDay:null, skills:{}, dailyLessons:0, dailyDate:null };
+}
+function save() { localStorage.setItem(STORE_KEY, JSON.stringify(DATA)); }
+
+function getSkillState(id) { return DATA.skills[id] || { lessonsCompleted:0, unlocked: id===SKILLS[0].id }; }
+function setSkillState(id, s) { DATA.skills[id] = s; save(); }
+
+let synth, toneStarted = false;
+async function ensureTone() { if(!toneStarted){await Tone.start();toneStarted=true;} if(!synth) synth=new Tone.Synth({oscillator:{type:'triangle'},envelope:{attack:0.02,decay:0.25,sustain:0.2,release:0.4}}).toDestination(); }
+function playN(name) { ensureTone().then(()=>{ const f=NOTE_FREQ[name]; if(f) synth.triggerAttackRelease(f,'8n'); }); }
+function playFreq(f) { ensureTone().then(()=>synth.triggerAttackRelease(f,'8n')); }
+function playCorrectSfx() { ensureTone().then(()=>{ const s=new Tone.Synth({oscillator:{type:'sine'},envelope:{attack:0.01,decay:0.1,sustain:0.05,release:0.2}}).toDestination(); s.triggerAttackRelease('E5','16n'); setTimeout(()=>{s.triggerAttackRelease('G5','16n');},100); setTimeout(()=>s.dispose(),500); }); }
+function playWrongSfx() { ensureTone().then(()=>{ const s=new Tone.Synth({oscillator:{type:'sawtooth'},envelope:{attack:0.01,decay:0.2,sustain:0,release:0.1}}).toDestination(); s.volume.value=-10; s.triggerAttackRelease('C3','8n'); setTimeout(()=>s.dispose(),500); }); }
+
+function rand(a) { return a[Math.floor(Math.random()*a.length)]; }
+function shuffle(a) { const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; }
+function todayStr() { return new Date().toISOString().slice(0,10); }
+
+// ============================================================
+// HOME
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-'+id).classList.add('active');
+}
+
+function goHome() {
+  showScreen('home');
+  renderHome();
+}
+
+function renderHome() {
+  load();
+  // Streak
+  const today = todayStr();
+  if (DATA.lastDay === today) { /* already played today */ }
+  else if (DATA.lastDay === getYesterday()) { /* streak continues */ }
+  else if (DATA.lastDay && DATA.lastDay !== today) { DATA.streak = 0; save(); }
+
+  document.getElementById('home-streak').textContent = DATA.streak;
+  document.getElementById('home-xp').textContent = DATA.xp;
+
+  // Daily
+  const dailyDone = (DATA.dailyDate === today) ? DATA.dailyLessons : 0;
+  document.getElementById('daily-title').textContent = dailyDone >= 1 ? '오늘 목표 달성! 🎉' : '오늘의 목표';
+  document.getElementById('daily-desc').textContent = `레슨 ${dailyDone} / 1 완료`;
+  document.getElementById('daily-fill').style.width = Math.min(100, dailyDone * 100) + '%';
+
+  // Skill path
+  const path = document.getElementById('skill-path');
+  path.innerHTML = '';
+
+  SKILLS.forEach((skill, idx) => {
+    const st = getSkillState(skill.id);
+    const totalLessons = skill.lessons.length;
+    const completed = st.lessonsCompleted >= totalLessons;
+    const unlocked = st.unlocked;
+    const isCurrent = unlocked && !completed;
+
+    if (idx > 0) {
+      const conn = document.createElement('div');
+      conn.className = 'path-connector' + (getSkillState(SKILLS[idx-1].id).lessonsCompleted >= SKILLS[idx-1].lessons.length ? ' done' : '');
+      path.appendChild(conn);
+    }
+
+    const node = document.createElement('div');
+    node.className = 'path-node ' + (completed ? 'completed' : isCurrent ? 'current' : unlocked ? 'available' : 'locked');
+    node.textContent = skill.icon;
+    if (completed) node.innerHTML = skill.icon + '<span class="crown">👑</span>';
+    if (unlocked) node.onclick = () => openSkill(idx);
+    path.appendChild(node);
+
+    const label = document.createElement('div');
+    label.className = 'path-node-label';
+    label.textContent = skill.label + (completed ? ' ✓' : unlocked ? ` (${st.lessonsCompleted}/${totalLessons})` : ' 🔒');
+    path.appendChild(label);
+  });
+}
+
+function getYesterday() {
+  const d = new Date(); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10);
+}
+
+// ============================================================
+// SKILL / LESSON START
+// ============================================================
+let currentSkillIdx, currentLessonIdx, lessonState;
+
+function openSkill(skillIdx) {
+  const skill = SKILLS[skillIdx];
+  const st = getSkillState(skill.id);
+  if (!st.unlocked) return;
+  currentSkillIdx = skillIdx;
+  currentLessonIdx = Math.min(st.lessonsCompleted, skill.lessons.length - 1);
+  startLesson();
+}
+
+function startLesson() {
+  ensureTone();
+  const skill = SKILLS[currentSkillIdx];
+  const lesson = skill.lessons[currentLessonIdx];
+
+  const questions = generateQuestions(lesson);
+  lessonState = {
+    questions,
+    current: 0,
+    hearts: 5,
+    correct: 0,
+    total: questions.length,
+    xpEarned: 0,
+    answered: false,
+  };
+
+  showScreen('lesson');
+  renderHearts();
+  updateLessonProgress();
+  showQuestion();
+}
+
+function retryLesson() { startLesson(); }
+function exitLesson() { goHome(); }
+
+// ============================================================
+// QUESTION GENERATION
+// ============================================================
+function generateQuestions(lesson) {
+  const qs = [];
+  const pool = lesson.notePool || NOTE_NAMES;
+  const count = lesson.qCount || 8;
+
+  for (let i = 0; i < count; i++) {
+    const r = Math.random();
+
+    if (lesson.type === 'melody') {
+      qs.push(genMelodyQ(pool));
+    } else if (lesson.type === 'rhythm') {
+      qs.push(genRhythmQ());
+    } else {
+      // Mixed: rotate through different types
+      if (lesson.earFocus && r < 0.4) {
+        qs.push(genEarQ(pool));
+      } else if (lesson.engMode && r < 0.3) {
+        qs.push(genEngQ(pool));
+      } else if (r < 0.5) {
+        qs.push(genStaffQ(pool));
+      } else if (r < 0.75) {
+        qs.push(genEarQ(pool));
+      } else {
+        qs.push(genMatchQ(pool));
+      }
+    }
+  }
+  return qs;
+}
+
+function genStaffQ(pool) {
+  const note = rand(pool);
+  const opts = shuffle(pool).slice(0, Math.min(4, pool.length));
+  if (!opts.includes(note)) opts[0] = note;
+  return { type:'staff', note, options:shuffle(opts), answer:note, prompt:'이 음의 이름은?' };
+}
+
+function genEarQ(pool) {
+  const note = rand(pool);
+  const opts = shuffle(pool).slice(0, Math.min(4, pool.length));
+  if (!opts.includes(note)) opts[0] = note;
+  return { type:'ear', note, freq:NOTE_FREQ[note], options:shuffle(opts), answer:note, prompt:'어떤 음일까요? 🔊' };
+}
+
+function genEngQ(pool) {
+  const note = rand(pool);
+  const opts = shuffle(pool).slice(0, Math.min(4, pool.length));
+  if (!opts.includes(note)) opts[0] = note;
+  return { type:'eng', note, answer:NOTE_ENG[note], options:shuffle(opts.map(n=>NOTE_ENG[n])), prompt:`"${note}"의 영어 계이름은?` };
+}
+
+function genMatchQ(pool) {
+  const note = rand(pool);
+  return { type:'match', note, freq:NOTE_FREQ[note], answer:note, prompt:'오선지의 음과 소리를 듣고 이름을 고르세요',
+    options: shuffle(pool.slice(0, Math.min(4, pool.length)).includes(note) ? pool.slice(0, Math.min(4, pool.length)) : [note, ...pool.filter(n=>n!==note).slice(0,3)]) };
+}
+
+function genMelodyQ(pool) {
+  const len = 3 + Math.floor(Math.random()*2);
+  const melody = [];
+  for(let i=0;i<len;i++) melody.push(rand(pool));
+  const missing = Math.floor(Math.random()*len);
+  const answer = melody[missing];
+  const opts = shuffle(pool).slice(0, Math.min(4, pool.length));
+  if(!opts.includes(answer)) opts[0] = answer;
+  return { type:'melody', melody, missing, answer, options:shuffle(opts),
+    prompt:'빈칸에 들어갈 음은?' };
+}
+
+function genRhythmQ() {
+  const rhythms = [
+    { name:'4분음표', beats:1, filled:true, stem:true, flag:0 },
+    { name:'2분음표', beats:2, filled:false, stem:true, flag:0 },
+    { name:'온음표', beats:4, filled:false, stem:false, flag:0 },
+    { name:'8분음표', beats:0.5, filled:true, stem:true, flag:1 },
+  ];
+  const chosen = rand(rhythms);
+  const opts = shuffle(rhythms).slice(0,4).map(r=>r.name);
+  if(!opts.includes(chosen.name)) opts[0] = chosen.name;
+  return { type:'rhythm-id', rhythm:chosen, answer:chosen.name, options:shuffle(opts),
+    prompt:'이 음표의 이름은?' };
+}
+
+// ============================================================
+// RENDER QUESTION
+// ============================================================
+function showQuestion() {
+  if (lessonState.current >= lessonState.total) { lessonComplete(); return; }
+  if (lessonState.hearts <= 0) { lessonFail(); return; }
+
+  lessonState.answered = false;
+  hideResultBar();
+  updateLessonProgress();
+
+  const q = lessonState.questions[lessonState.current];
+  const area = document.getElementById('question-area');
+
+  let html = `<div class="q-prompt">${q.prompt}</div>`;
+
+  if (q.type === 'staff' || q.type === 'match') {
+    html += `<canvas class="q-staff" id="q-canvas" width="400" height="160"></canvas>`;
+  }
+  if (q.type === 'ear') {
+    html += `<button class="play-btn" onclick="playEarQ()">🔊</button>`;
+    html += `<div class="q-sub">버튼을 눌러 소리를 들어보세요</div>`;
+  }
+  if (q.type === 'match') {
+    html += `<button class="play-btn" onclick="playEarQ()" style="width:60px;height:60px;font-size:24px;margin-bottom:12px">🔊</button>`;
+  }
+  if (q.type === 'melody') {
+    html += `<canvas class="q-staff" id="q-canvas" width="400" height="160"></canvas>`;
+    html += `<button class="play-btn" onclick="playMelodyQ()" style="width:60px;height:60px;font-size:24px;margin-bottom:12px">🔊</button>`;
+  }
+  if (q.type === 'rhythm-id') {
+    html += `<canvas class="q-staff" id="q-canvas" width="200" height="160" style="max-width:200px"></canvas>`;
+  }
+
+  const cols = q.options.length <= 3 ? 'cols-3' : 'cols-4';
+  html += `<div class="options ${q.options.length === 2 ? 'cols-2' : cols}">`;
+  q.options.forEach((opt, i) => {
+    html += `<button class="opt-btn" id="opt-${i}" onclick="selectAnswer(${i})">${opt}</button>`;
+  });
+  html += `</div>`;
+
+  area.innerHTML = html;
+
+  // Draw canvas after render
+  setTimeout(() => {
+    if (q.type === 'staff' || q.type === 'match') drawStaffQ(q);
+    if (q.type === 'melody') drawMelodyQ(q);
+    if (q.type === 'rhythm-id') drawRhythmQ(q);
+    if (q.type === 'ear') setTimeout(playEarQ, 300);
+  }, 50);
+}
+
+// ============================================================
+// DRAW
+// ============================================================
+function noteY(n) { return{C4:95,D4:87,E4:79,F4:71,G4:63,A4:55,B4:47}[n]||63; }
+
+function drawStaffQ(q) {
+  const c = document.getElementById('q-canvas'); if(!c) return;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,400,160);
+  // staff
+  ctx.strokeStyle='#bbb'; ctx.lineWidth=1.5;
+  for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(40,35+i*15);ctx.lineTo(360,35+i*15);ctx.stroke();}
+  // clef
+  ctx.font='56px serif'; ctx.fillStyle='#6A9FC5'; ctx.fillText('𝄞',8,82);
+  // note
+  const freq = NOTE_FREQ[q.note];
+  const y = noteY(freq);
+  const x = 200;
+  ctx.fillStyle='#333';
+  ctx.beginPath(); ctx.ellipse(x,y,11,8,-0.2,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='#333'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(x+10,y); ctx.lineTo(x+10,y-35); ctx.stroke();
+  if(freq==='C4'){ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-16,95);ctx.lineTo(x+16,95);ctx.stroke();}
+}
+
+function drawMelodyQ(q) {
+  const c = document.getElementById('q-canvas'); if(!c) return;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,400,160);
+  ctx.strokeStyle='#bbb'; ctx.lineWidth=1.5;
+  for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(40,35+i*15);ctx.lineTo(360,35+i*15);ctx.stroke();}
+  ctx.font='56px serif'; ctx.fillStyle='#6A9FC5'; ctx.fillText('𝄞',8,82);
+
+  const spacing = 260 / q.melody.length;
+  q.melody.forEach((note, i) => {
+    const x = 90 + i * spacing;
+    const freq = NOTE_FREQ[note];
+    const y = noteY(freq);
+    if (i === q.missing) {
+      // question mark
+      ctx.fillStyle='var(--red)'; ctx.font='bold 24px sans-serif'; ctx.textAlign='center';
+      ctx.fillText('?', x, y+8); ctx.textAlign='start';
+    } else {
+      ctx.fillStyle='#333';
+      ctx.beginPath(); ctx.ellipse(x,y,10,7,-0.2,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#333'; ctx.lineWidth=1.8;
+      ctx.beginPath(); ctx.moveTo(x+9,y); ctx.lineTo(x+9,y-30); ctx.stroke();
+      if(freq==='C4'){ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-14,95);ctx.lineTo(x+14,95);ctx.stroke();}
+    }
+  });
+}
+
+function drawRhythmQ(q) {
+  const c = document.getElementById('q-canvas'); if(!c) return;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,200,160);
+  const r = q.rhythm;
+  const cx=100, cy=100;
+  ctx.fillStyle='#333'; ctx.strokeStyle='#333';
+
+  if (!r.filled && !r.stem) {
+    // 온음표
+    ctx.lineWidth=3; ctx.beginPath(); ctx.ellipse(cx,cy,18,13,-0.2,0,Math.PI*2); ctx.stroke();
+  } else if (!r.filled && r.stem) {
+    // 2분음표
+    ctx.lineWidth=3; ctx.beginPath(); ctx.ellipse(cx,cy,16,11,-0.2,0,Math.PI*2); ctx.stroke();
+    ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(cx+15,cy); ctx.lineTo(cx+15,cy-50); ctx.stroke();
+  } else if (r.filled && r.stem && r.flag===0) {
+    // 4분음표
+    ctx.beginPath(); ctx.ellipse(cx,cy,16,11,-0.2,0,Math.PI*2); ctx.fill();
+    ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(cx+15,cy); ctx.lineTo(cx+15,cy-50); ctx.stroke();
+  } else if (r.filled && r.stem && r.flag===1) {
+    // 8분음표
+    ctx.beginPath(); ctx.ellipse(cx,cy,16,11,-0.2,0,Math.PI*2); ctx.fill();
+    ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(cx+15,cy); ctx.lineTo(cx+15,cy-50); ctx.stroke();
+    ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(cx+15,cy-50);
+    ctx.quadraticCurveTo(cx+32,cy-38,cx+20,cy-24); ctx.stroke();
+  }
+}
+
+// ============================================================
+// PLAY SOUNDS
+// ============================================================
+function playEarQ() {
+  const q = lessonState.questions[lessonState.current];
+  playN(q.note);
+}
+function playMelodyQ() {
+  const q = lessonState.questions[lessonState.current];
+  ensureTone().then(()=>{
+    const now = Tone.now();
+    q.melody.forEach((note,i) => {
+      synth.triggerAttackRelease(NOTE_FREQ[note],'8n',now+i*0.4);
+    });
+  });
+}
+
+// ============================================================
+// ANSWER
+// ============================================================
+function selectAnswer(idx) {
+  if (lessonState.answered) return;
+  lessonState.answered = true;
+
+  const q = lessonState.questions[lessonState.current];
+  const selected = q.options[idx];
+  const correct = selected === q.answer;
+
+  // Highlight
+  q.options.forEach((opt, i) => {
+    const btn = document.getElementById('opt-'+i);
+    if (opt === q.answer) btn.classList.add('correct');
+    if (i === idx && !correct) btn.classList.add('wrong');
+  });
+
+  if (correct) {
+    lessonState.correct++;
+    playCorrectSfx();
+    showResultBar(true, '잘했어요! 🎉');
+  } else {
+    lessonState.hearts--;
+    renderHearts();
+    playWrongSfx();
+    showResultBar(false, `정답: ${q.answer}`);
+  }
+}
+
+function showResultBar(correct, text) {
+  const bar = document.getElementById('result-bar');
+  bar.className = 'result-bar show ' + (correct ? 'correct-bar' : 'wrong-bar');
+  document.getElementById('result-text').textContent = text;
+}
+function hideResultBar() {
+  document.getElementById('result-bar').className = 'result-bar';
+}
+
+function nextQuestion() {
+  lessonState.current++;
+  if (lessonState.hearts <= 0) { lessonFail(); return; }
+  showQuestion();
+}
+
+// ============================================================
+// LESSON END
+// ============================================================
+function lessonComplete() {
+  const xp = 10 + lessonState.correct * 2;
+  DATA.xp += xp;
+
+  // Update skill progress
+  const skill = SKILLS[currentSkillIdx];
+  const st = getSkillState(skill.id);
+  if (currentLessonIdx >= st.lessonsCompleted) {
+    st.lessonsCompleted = currentLessonIdx + 1;
+  }
+  st.unlocked = true;
+  setSkillState(skill.id, st);
+
+  // Unlock next skill if this one is complete
+  if (st.lessonsCompleted >= skill.lessons.length && currentSkillIdx < SKILLS.length - 1) {
+    const nextSt = getSkillState(SKILLS[currentSkillIdx + 1].id);
+    nextSt.unlocked = true;
+    setSkillState(SKILLS[currentSkillIdx + 1].id, nextSt);
+  }
+
+  // Daily + streak
+  const today = todayStr();
+  if (DATA.dailyDate !== today) { DATA.dailyLessons = 0; DATA.dailyDate = today; }
+  DATA.dailyLessons++;
+  if (DATA.lastDay !== today) {
+    if (DATA.lastDay === getYesterday()) DATA.streak++;
+    else DATA.streak = 1;
+    DATA.lastDay = today;
+  }
+  save();
+
+  // Show
+  const acc = lessonState.total > 0 ? Math.round(lessonState.correct / lessonState.total * 100) : 0;
+  document.getElementById('complete-xp').textContent = `+${xp} XP`;
+  document.getElementById('complete-msg').textContent = `${skill.label} 레슨 ${currentLessonIdx + 1} 완료!`;
+  document.getElementById('c-correct').textContent = lessonState.correct;
+  document.getElementById('c-total').textContent = lessonState.total;
+  document.getElementById('c-accuracy').textContent = acc + '%';
+  showScreen('complete');
+}
+
+function lessonFail() {
+  showScreen('fail');
+}
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+function renderHearts() {
+  const el = document.getElementById('lesson-hearts');
+  el.innerHTML = '';
+  for (let i = 0; i < 5; i++) {
+    el.innerHTML += i < lessonState.hearts ? '❤️' : '🖤';
+  }
+}
+
+function updateLessonProgress() {
+  const pct = lessonState.total > 0 ? (lessonState.current / lessonState.total * 100) : 0;
+  document.getElementById('lesson-progress').style.width = pct + '%';
+}
+
+// ============================================================
+// INIT
+// ============================================================
+load();
+renderHome();
+</script>
+</body>
+</html>
