@@ -405,9 +405,9 @@ const SKILLS = [
     ]},
   { id:'accidental1', icon:'♯', label:'샵과 플랫', desc:'#과 ♭ 배우기',
     lessons: [
+      { type:'accidental-basic', qCount:6 },
       { type:'accidental-intro', qCount:8 },
-      { type:'accidental-read', qCount:10 },
-      { type:'accidental-ear', qCount:10 },
+      { type:'accidental-ear', qCount:8 },
     ]},
 
   { id:'slur1', icon:'🔗', label:'이음줄·붙임줄', desc:'이어서 연주해요',
@@ -772,8 +772,8 @@ function generateQuestions(lesson) {
     else if (t === 'rhythm-quiz') { qs.push(genRhythmQuizQ()); }
     else if (t === 'note-name') { qs.push(Math.random()>0.3 ? genNoteNameQ() : genRestQ()); }
     else if (t === 'note-name-beats') { qs.push(genNoteNameBeatsQ()); }
+    else if (t === 'accidental-basic') { qs.push(genAccidentalBasicQ()); }
     else if (t === 'accidental-intro') { qs.push(genAccidentalIntroQ()); }
-    else if (t === 'accidental-read') { qs.push(genAccidentalReadQ()); }
     else if (t === 'accidental-ear') { qs.push(genAccidentalEarQ()); }
     else if (t === 'melody') { qs.push(genMelodyQ(pool)); }
     else if (t === 'rhythm') { qs.push(genRhythmQ()); }
@@ -1015,51 +1015,57 @@ function genRestQ() {
 }
 
 // --- 샵/플랫 기호 소개 ---
-function genAccidentalIntroQ() {
+// --- 샵/플랫 기초 (레슨1: 아주 쉬움) ---
+function genAccidentalBasicQ() {
   const r = Math.random();
-  if (r < 0.4) {
-    // 기호 → 이름
-    const chosen = rand(ACCIDENTALS);
-    const opts = shuffle(ACCIDENTALS).map(a=>a.name);
-    return { type:'accidental-symbol', accidental:chosen, answer:chosen.name, options:shuffle(opts),
-      prompt:`이 기호 "${chosen.symbol}" 의 이름은?` };
-  } else if (r < 0.7) {
-    // 기호 → 뜻
-    const chosen = rand(ACCIDENTALS);
-    const opts = shuffle(ACCIDENTALS).map(a=>a.desc);
-    return { type:'accidental-meaning', accidental:chosen, answer:chosen.desc, options:shuffle(opts),
-      prompt:`"${chosen.symbol} ${chosen.name}" 의 뜻은?` };
+  if (r < 0.5) {
+    // ♯ = 샵, ♭ = 플랫 — 2지선다
+    const isSharp = Math.random()>0.5;
+    const symbol = isSharp ? '♯' : '♭';
+    const answer = isSharp ? '샵 (Sharp)' : '플랫 (Flat)';
+    return { type:'accidental-symbol', accidental:{symbol},
+      answer, options:shuffle(['샵 (Sharp)','플랫 (Flat)']),
+      prompt:`이 기호는 무엇일까요?`,
+      info: isSharp ? '💡 샵(♯)은 반음 올려요!' : '💡 플랫(♭)은 반음 내려요!' };
   } else {
-    // 이명동음: 도♯ = 레♭?
-    const idx = Math.floor(Math.random()*SHARP_NOTES.length);
-    const sharp = SHARP_NOTES[idx];
-    const flat = FLAT_NOTES[idx];
-    return { type:'enharmonic', answer:'같은 음이에요!',
-      options:shuffle(['같은 음이에요!','다른 음이에요!']),
-      prompt:`${sharp.kr}과 ${flat.kr}는 같은 음일까요?`,
-      sub:`${sharp.kr}은 ${sharp.between[0]}과 ${sharp.between[1]} 사이` };
+    // 올림/내림 2지선다
+    const isSharp = Math.random()>0.5;
+    const answer = isSharp ? '반음 올림 ⬆️' : '반음 내림 ⬇️';
+    return { type:'accidental-symbol', accidental:{symbol: isSharp?'♯':'♭'},
+      answer, options:shuffle(['반음 올림 ⬆️','반음 내림 ⬇️']),
+      prompt:`${isSharp?'♯ 샵':'♭ 플랫'}은 음을 어떻게 바꿀까요?`,
+      info: isSharp ? '💡 샵(♯) = 반음 높이기!' : '💡 플랫(♭) = 반음 낮추기!' };
   }
 }
 
-// --- 샵/플랫 오선지 읽기 ---
-function genAccidentalReadQ() {
-  const useSharp = Math.random() > 0.5;
-  const note = useSharp ? rand(SHARP_NOTES) : rand(FLAT_NOTES);
-  const allNotes = [...SHARP_NOTES.map(n=>n.kr), ...FLAT_NOTES.map(n=>n.kr)];
-  const opts = shuffle(allNotes).slice(0,4);
-  if(!opts.includes(note.kr)) opts[0]=note.kr;
-  return { type:'accidental-read', note, isSharp:useSharp, answer:note.kr, options:shuffle(opts),
-    prompt:'이 음의 이름은?' };
+function genAccidentalIntroQ() {
+  const r = Math.random();
+  if (r < 0.5) {
+    // 기호 → 이름 (3개 중 고르기)
+    const chosen = rand(ACCIDENTALS);
+    const opts = ACCIDENTALS.map(a=>a.name);
+    return { type:'accidental-symbol', accidental:chosen, answer:chosen.name, options:shuffle(opts),
+      prompt:`이 기호 "${chosen.symbol}" 의 이름은?`,
+      info:`💡 ${chosen.symbol} = ${chosen.desc}` };
+  } else {
+    // 기호 → 뜻 (3개 중 고르기)
+    const chosen = rand(ACCIDENTALS);
+    const opts = ACCIDENTALS.map(a=>a.desc);
+    return { type:'accidental-meaning', accidental:chosen, answer:chosen.desc, options:shuffle(opts),
+      prompt:`"${chosen.symbol}" 는 무슨 뜻일까요?`,
+      info:`💡 ${chosen.name} = ${chosen.desc}` };
+  }
 }
 
-// --- 샵/플랫 청음 ---
+// --- 샵/플랫 청음 (힌트 추가) ---
 function genAccidentalEarQ() {
-  const baseNote = rand(['도','레','파','솔','라']);
+  const baseNote = rand(['도','미','솔']);  // 쉬운 3음만
   const goSharp = Math.random()>0.5;
-  const answer = goSharp ? '반음 올라갔어요 ♯' : '반음 내려갔어요 ♭';
+  const answer = goSharp ? '올라갔어요 ♯⬆️' : '내려갔어요 ♭⬇️';
   return { type:'accidental-ear', baseNote, goSharp, answer,
-    options:shuffle(['반음 올라갔어요 ♯','반음 내려갔어요 ♭']),
-    prompt:'원래 음과 비교해서 어떻게 변했나요? 🎧' };
+    options:shuffle(['올라갔어요 ♯⬆️','내려갔어요 ♭⬇️']),
+    prompt:`"${baseNote}" 음이 변했어요! 어떻게? 🎧`,
+    info:'💡 첫 번째 소리와 두 번째 소리를 비교해보세요!' };
 }
 
 // --- 높낮이 비교 ---
@@ -1229,11 +1235,7 @@ function showQuestion() {
 
   // 샵/플랫 기호
   if (q.type === 'accidental-symbol' || q.type === 'accidental-meaning') {
-    html += `<div style="font-size:64px;margin-bottom:12px">${q.accidental.symbol}</div>`;
-  }
-  if (q.type === 'enharmonic') {
-    html += `<div style="font-size:20px;margin-bottom:8px">🎹</div>`;
-    if(q.sub) html += `<div class="q-sub">${q.sub}</div>`;
+    html += `<div style="font-size:72px;margin-bottom:8px">${q.accidental.symbol}</div>`;
   }
 
   // 샵/플랫 오선지
@@ -1286,6 +1288,11 @@ function showQuestion() {
 
   // 셈여림 — 추가 비주얼 없음 (프롬프트에 다 있음)
   // 빠르기말 — 추가 비주얼 없음
+
+  // 힌트 표시
+  if (q.info) {
+    html += `<div class="q-sub" style="background:#f0f7ff;padding:8px 12px;border-radius:10px;margin-bottom:12px;font-size:13px;color:var(--blue)">${q.info}</div>`;
+  }
 
   // 옵션 버튼 (rhythm-tap은 제외)
   if (q.type !== 'rhythm-tap') {
