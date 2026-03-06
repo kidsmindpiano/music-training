@@ -1928,7 +1928,8 @@ function selectAnswer(idx) {
   if (correct) {
     lessonState.correct++;
     playCorrectSfx();
-    showResultBar(true, '잘했어요! 🎉');
+    // 맞추면 바로 다음 문제로
+    setTimeout(() => { nextQuestion(); }, 600);
   } else {
     lessonState.hearts--;
     renderHearts();
