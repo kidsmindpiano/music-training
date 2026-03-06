@@ -993,12 +993,15 @@ function genNoteNameQ() {
 function genNoteNameBeatsQ() {
   const notes = NOTE_TYPES.filter(n=>!n.isRest);
   const chosen = rand(notes);
-  const allBeats = ['4박','2박','1박','반 박','4분의 1박'];
-  const beatsStr = chosen.beats>=1 ? chosen.beats+'박' : chosen.beats===0.5 ? '반 박' : '4분의 1박';
-  const opts = shuffle(allBeats).slice(0,4);
-  if(!opts.includes(beatsStr)) opts[0]=beatsStr;
-  return { type:'note-beats', noteType:chosen, answer:beatsStr, options:shuffle(opts),
-    prompt:`${chosen.name}은(는) 몇 박일까요?` };
+  const beatsMap = {4:'4박',2:'2박',1:'1박',0.5:'반 박',0.25:'4분의 1박'};
+  const beatsStr = beatsMap[chosen.beats] || chosen.beats+'박';
+  // 옵션을 음표 그림으로 표시 (canvas id로 구분)
+  const optNotes = shuffle(notes).slice(0,4);
+  if(!optNotes.find(n=>n.name===chosen.name)) optNotes[0]=chosen;
+  const shuffled = shuffle(optNotes);
+  return { type:'note-beats', noteType:chosen, answer:chosen.name,
+    options: shuffled.map(n=>n.name), optNotes: shuffled,
+    prompt:`이 박자의 음표는? → ${beatsStr}` };
 }
 
 // --- 쉼표 맞추기 ---
@@ -1191,7 +1194,7 @@ function showQuestion() {
   }
 
   // 음표 이름 맞추기
-  if (q.type === 'note-name-id' || q.type === 'note-beats') {
+  if (q.type === 'note-name-id') {
     html += `<canvas class="q-staff" id="q-canvas" width="200" height="160" style="max-width:200px"></canvas>`;
     if (q.noteType.desc) html += `<div class="q-sub">${q.noteType.desc}</div>`;
   }
@@ -1288,9 +1291,19 @@ function showQuestion() {
   if (q.type !== 'rhythm-tap') {
     const cols = q.options.length <= 2 ? 'cols-2' : q.options.length <= 3 ? 'cols-3' : 'cols-4';
     html += `<div class="options ${cols}">`;
-    q.options.forEach((opt, i) => {
-      html += `<button class="opt-btn" id="opt-${i}" onclick="selectAnswer(${i})">${opt}</button>`;
-    });
+    if (q.type === 'note-beats' && q.optNotes) {
+      // 음표 그림 옵션
+      q.options.forEach((opt, i) => {
+        html += `<button class="opt-btn" id="opt-${i}" onclick="selectAnswer(${i})" style="padding:8px 4px">
+          <canvas id="opt-canvas-${i}" width="80" height="70" style="width:60px;height:52px;display:block;margin:0 auto"></canvas>
+          <div style="font-size:11px;color:#999;margin-top:2px">${opt}</div>
+        </button>`;
+      });
+    } else {
+      q.options.forEach((opt, i) => {
+        html += `<button class="opt-btn" id="opt-${i}" onclick="selectAnswer(${i})">${opt}</button>`;
+      });
+    }
     html += `</div>`;
   }
 
@@ -1307,7 +1320,8 @@ function showQuestion() {
     if (q.type === 'interval') setTimeout(playIntervalQ, 300);
     if (q.type === 'rhythm-compare') drawRhythmCompare(q);
     if (q.type === 'rhythm-tap') { initTap(q); }
-    if (q.type === 'note-name-id' || q.type === 'note-beats') drawNoteTypeQ(q);
+    if (q.type === 'note-name-id') drawNoteTypeQ(q);
+    if (q.type === 'note-beats') { drawNoteTypeQ(q); drawOptNotes(q); }
     if (q.type === 'rest-id') drawRestQ(q);
     if (q.type === 'accidental-read') drawAccidentalQ(q);
     if (q.type === 'accidental-ear') setTimeout(playAccidentalEar, 300);
@@ -1487,6 +1501,23 @@ function drawRhythmTapPattern(q) {
     // 박자 라벨
     ctx.fillStyle='#999'; ctx.font='12px sans-serif'; ctx.textAlign='center';
     ctx.fillText(q.pattern.beats[i]+'박', cx, cy+28); ctx.textAlign='start';
+  });
+}
+
+// --- 옵션 음표 그리기 ---
+function drawOptNotes(q) {
+  if (!q.optNotes) return;
+  q.optNotes.forEach((note, i) => {
+    const c = document.getElementById(`opt-canvas-${i}`);
+    if (!c) return;
+    const ctx = c.getContext('2d'); ctx.clearRect(0,0,80,70);
+    const cx=40, cy=40;
+    ctx.fillStyle='#333'; ctx.strokeStyle='#333';
+    if(!note.filled&&!note.stem){ctx.lineWidth=2.5;ctx.beginPath();ctx.ellipse(cx,cy,14,10,-0.2,0,Math.PI*2);ctx.stroke();}
+    else if(!note.filled&&note.stem){ctx.lineWidth=2.5;ctx.beginPath();ctx.ellipse(cx,cy,12,9,-0.2,0,Math.PI*2);ctx.stroke();ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx+11,cy);ctx.lineTo(cx+11,cy-30);ctx.stroke();}
+    else if(note.filled&&note.stem&&note.flag===0){ctx.beginPath();ctx.ellipse(cx,cy,12,9,-0.2,0,Math.PI*2);ctx.fill();ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx+11,cy);ctx.lineTo(cx+11,cy-30);ctx.stroke();}
+    else if(note.filled&&note.stem&&note.flag===1){ctx.beginPath();ctx.ellipse(cx,cy,12,9,-0.2,0,Math.PI*2);ctx.fill();ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx+11,cy);ctx.lineTo(cx+11,cy-30);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+11,cy-30);ctx.quadraticCurveTo(cx+24,cy-22,cx+15,cy-14);ctx.stroke();}
+    else if(note.filled&&note.stem&&note.flag===2){ctx.beginPath();ctx.ellipse(cx,cy,12,9,-0.2,0,Math.PI*2);ctx.fill();ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx+11,cy);ctx.lineTo(cx+11,cy-30);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+11,cy-30);ctx.quadraticCurveTo(cx+24,cy-22,cx+15,cy-14);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+11,cy-24);ctx.quadraticCurveTo(cx+24,cy-16,cx+15,cy-8);ctx.stroke();}
   });
 }
 
