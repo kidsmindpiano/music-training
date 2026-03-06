@@ -1172,7 +1172,8 @@ function showQuestion() {
   const q = lessonState.questions[lessonState.current];
   const area = document.getElementById('question-area');
 
-  let html = `<div class="q-prompt">${q.prompt}</div>`;
+  let html = `<div class="q-sub" style="margin-bottom:4px;font-size:13px;color:var(--blue)">문제 ${lessonState.current+1} / ${lessonState.total}</div>`;
+  html += `<div class="q-prompt">${q.prompt}</div>`;
 
   if (q.type === 'staff') {
     html += `<canvas class="q-staff" id="q-canvas" width="400" height="160"></canvas>`;
