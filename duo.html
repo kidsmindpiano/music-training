@@ -18,9 +18,8 @@
 body { font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
 
 /* ===== SCREENS ===== */
-.screen { display:none !important; min-height:100vh; }
-.screen.active { display:block !important; }
-.tut-screen.active { display:flex !important; }
+.screen { display:none; min-height:100vh; }
+.screen.active { display:block; }
 
 /* ===== TOP BAR ===== */
 .top-bar { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:var(--card); border-bottom:1px solid #eee; position:sticky; top:0; z-index:50; }
@@ -187,7 +186,8 @@ body { font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:
 .dash-back { display:block; margin:20px auto; padding:12px 28px; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; background:var(--blue); color:#fff; }
 
 /* ===== TUTORIAL ===== */
-.tut-screen { min-height:100vh; background:linear-gradient(135deg,#e8f0fe,#fce4ec); flex-direction:column; }
+.screen-tutorial { background:linear-gradient(135deg,#e8f0fe,#fce4ec); }
+.screen-tutorial.active { display:flex !important; flex-direction:column; }
 .tut-top { padding:12px 16px; display:flex; align-items:center; gap:8px; }
 .tut-top .close-btn { font-size:24px; color:#999; background:none; border:none; cursor:pointer; }
 .tut-dots { display:flex; gap:6px; flex:1; justify-content:center; }
@@ -297,7 +297,7 @@ body { font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:
 </div>
 
 <!-- ===== TUTORIAL SCREEN ===== -->
-<div id="screen-tutorial" class="screen tut-screen">
+<div id="screen-tutorial" class="screen">
   <div class="tut-top">
     <button class="close-btn" onclick="skipTutorial()">✕</button>
     <div class="tut-dots" id="tut-dots"></div>
