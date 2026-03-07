@@ -2139,24 +2139,24 @@ function updateLessonProgress() {
 // ============================================================
 const TUTORIALS = {
   note1: [
-    { title:'안녕! 나는 음표야 🎵', text:'오늘부터 음악을 배워볼 거야!<br>먼저 <b>도, 레, 미</b> 세 개의 음을 배워보자!' },
+    { title:'안녕! 나는 음표야 🎵', text:'오늘부터 음악을 배워볼 거야!<br>먼저 <b>도, 레, 미</b> 세 개의 음을 배워보자!', piano:['도','레','미'] },
     { title:'오선지란? 🎼', text:'음악은 <b>5개의 줄</b> 위에 적어요.<br>이걸 <b>오선지</b>라고 해요!', canvas:'staff' },
-    { title:'도 (C) 🎹', text:'<b>도</b>는 오선지 <b>아래 덧줄</b>에 있어요!', canvas:'noteC' },
-    { title:'레 (D)', text:'<b>레</b>는 첫째 줄 바로 <b>아래 칸</b>에 있어요!', canvas:'noteD' },
-    { title:'미 (E)', text:'<b>미</b>는 <b>첫째 줄</b> 위에 있어요!', canvas:'noteE' },
-    { title:'자, 시작해볼까? 🎉', text:'도, 레, 미를 오선지에서 찾아보자!<br>소리도 들어보면서 맞춰봐요!' },
+    { title:'도 (C) 🎹', text:'<b>도</b>는 피아노에서 가장 먼저 배우는 음!<br>오선지에서는 <b>아래 덧줄</b>에 있어요.', piano:['도'], canvas:'noteC' },
+    { title:'레 (D)', text:'<b>레</b>는 도 바로 오른쪽!<br>오선지에서는 첫째 줄 <b>아래 칸</b>이에요.', piano:['레'], canvas:'noteD' },
+    { title:'미 (E)', text:'<b>미</b>는 레 오른쪽!<br>오선지에서는 <b>첫째 줄</b> 위에 있어요.', piano:['미'], canvas:'noteE' },
+    { title:'자, 시작해볼까? 🎉', text:'도, 레, 미를 오선지에서 찾아보자!<br>소리도 들어보면서 맞춰봐요!', piano:['도','레','미'] },
   ],
   note2: [
-    { title:'새로운 음이야! 🎶', text:'이번엔 <b>파</b>와 <b>솔</b>을 배워볼 거야!' },
-    { title:'파 (F)', text:'<b>파</b>는 첫째 줄과 둘째 줄 사이 <b>첫째 칸</b>이에요!', canvas:'noteF' },
-    { title:'솔 (G)', text:'<b>솔</b>은 <b>둘째 줄</b> 위에 있어요!', canvas:'noteG' },
-    { title:'5개 음 완성! 🎉', text:'도레미파솔! 5개의 음을 알게 됐어요!<br>이제 퀴즈로 연습해봐요!' },
+    { title:'새로운 음이야! 🎶', text:'이번엔 <b>파</b>와 <b>솔</b>을 배워볼 거야!', piano:['파','솔'] },
+    { title:'파 (F)', text:'<b>파</b>는 미 오른쪽! 검은 건반 없이 바로 붙어있어요.<br>오선지에서는 <b>첫째 칸</b>이에요.', piano:['파'], canvas:'noteF' },
+    { title:'솔 (G)', text:'<b>솔</b>은 파 오른쪽!<br>오선지에서는 <b>둘째 줄</b> 위에 있어요.', piano:['솔'], canvas:'noteG' },
+    { title:'5개 음 완성! 🎉', text:'도레미파솔! 5개의 음을 알게 됐어요!', piano:['도','레','미','파','솔'] },
   ],
   note3: [
-    { title:'마지막 두 음! 🌟', text:'<b>라</b>와 <b>시</b>를 배우면 7개 음 완성!' },
-    { title:'라 (A)', text:'<b>라</b>는 둘째 줄과 셋째 줄 사이<br><b>둘째 칸</b>이에요!', canvas:'noteA' },
-    { title:'시 (B)', text:'<b>시</b>는 <b>셋째 줄</b> 위에 있어요!', canvas:'noteB' },
-    { title:'도레미파솔라시! 🎉', text:'7개 음을 모두 배웠어요!<br>이제 어떤 음이든 찾을 수 있어요!' },
+    { title:'마지막 두 음! 🌟', text:'<b>라</b>와 <b>시</b>를 배우면 7개 음 완성!', piano:['라','시'] },
+    { title:'라 (A)', text:'<b>라</b>는 솔 오른쪽!<br>오선지에서는 <b>둘째 칸</b>이에요.', piano:['라'], canvas:'noteA' },
+    { title:'시 (B)', text:'<b>시</b>는 라 오른쪽! 제일 높은 흰 건반!<br>오선지에서는 <b>셋째 줄</b> 위에 있어요.', piano:['시'], canvas:'noteB' },
+    { title:'도레미파솔라시! 🎉', text:'7개 음을 모두 배웠어요!<br>피아노 건반 위치도 기억해봐요!', piano:['도','레','미','파','솔','라','시'] },
   ],
   notename1: [
     { title:'음표의 종류 📝', text:'음표마다 <b>길이</b>가 달라요!<br>길이에 따라 모양이 바뀌어요.' },
@@ -2166,10 +2166,10 @@ const TUTORIALS = {
     { title:'8분음표 = 반 박', text:'4분음표에 <b>꼬리 1개</b> 추가!', highlight:'♪ → 반 박' },
   ],
   accidental1: [
-    { title:'샵과 플랫! ♯♭', text:'음을 <b>살짝 바꾸는</b> 신기한 기호예요!' },
-    { title:'샵 ♯ = 반음 올림', text:'<b>♯</b>이 붙으면 음이 <b>살짝 올라가요!</b>', highlight:'도♯ = 도보다 조금 높은 음', example:'♯' },
-    { title:'플랫 ♭ = 반음 내림', text:'<b>♭</b>이 붙으면 음이 <b>살짝 내려가요!</b>', highlight:'레♭ = 레보다 조금 낮은 음', example:'♭' },
-    { title:'쉽죠? 😊', text:'샵은 올리고, 플랫은 내리고!<br>이제 퀴즈로 확인해봐요!' },
+    { title:'샵과 플랫! ♯♭', text:'음을 <b>살짝 바꾸는</b> 신기한 기호예요!<br>피아노의 <b>검은 건반</b>이 바로 이거예요!', piano:['도♯','레♯','파♯','솔♯','라♯'] },
+    { title:'샵 ♯ = 반음 올림', text:'<b>♯</b>이 붙으면 <b>오른쪽 검은 건반</b>으로!<br>도 → 도♯ (살짝 올라감)', piano:['도','도♯'] },
+    { title:'플랫 ♭ = 반음 내림', text:'<b>♭</b>이 붙으면 <b>왼쪽 검은 건반</b>으로!<br>레 → 레♭ (살짝 내려감)', piano:['레','도♯'] },
+    { title:'쉽죠? 😊', text:'검은 건반 = 샵 또는 플랫!<br>이제 퀴즈로 확인해봐요!', piano:['도♯','레♯','파♯','솔♯','라♯'] },
   ],
   rhythm1: [
     { title:'리듬을 배워요! 🥁', text:'음표마다 길이가 달라서<br><b>리듬</b>이 만들어져요!' },
@@ -2182,13 +2182,13 @@ const TUTORIALS = {
     { title:'시작할게요! 🥁', text:'메트로놈 소리에 맞춰<br>음표가 오면 꾹 눌러봐요!' },
   ],
   ear1: [
-    { title:'귀를 열어요! 👂', text:'소리를 듣고 어떤 음인지<br>맞춰보는 거예요!' },
-    { title:'소리를 잘 들어봐요 🔊', text:'🔊 버튼을 누르면 소리가 나와요.<br>높은 소리? 낮은 소리?<br>어떤 음일지 생각해봐요!' },
+    { title:'귀를 열어요! 👂', text:'소리를 듣고 어떤 음인지<br>맞춰보는 거예요!', piano:['도','레','미'] },
+    { title:'소리를 잘 들어봐요 🔊', text:'🔊 버튼을 누르면 소리가 나와요.<br>높은 소리? 낮은 소리?<br>어떤 음일지 생각해봐요!', piano:['도','미','솔'] },
     { title:'시작! 🎧', text:'처음엔 어려워도 괜찮아요!<br>자꾸 들으면 귀가 좋아져요!' },
   ],
   highlow: [
     { title:'높낮이를 구분해요! 📊', text:'두 개의 소리를 듣고<br><b>어떤 게 더 높은지</b> 맞춰봐요!' },
-    { title:'높은 음 vs 낮은 음', text:'<b>도</b>가 가장 낮고 <b>시</b>가 가장 높아요!', highlight:'도 < 레 < 미 < 파 < 솔 < 라 < 시' },
+    { title:'높은 음 vs 낮은 음', text:'피아노에서 <b>오른쪽</b>으로 갈수록 높아요!<br><b>도</b>가 가장 낮고 <b>시</b>가 가장 높아요!', piano:['도','레','미','파','솔','라','시'] },
     { title:'들어보자! 🎧', text:'두 소리를 잘 비교해봐요!' },
   ],
   slur1: [
@@ -2217,8 +2217,8 @@ const TUTORIALS = {
     { title:'예를 들면...', text:'도→레→미 = <b>올라가요 ⬆️</b><br>미→레→도 = <b>내려가요 ⬇️</b>' },
   ],
   note4: [
-    { title:'영어 계이름! 🎹', text:'전 세계에서는 <b>알파벳</b>으로<br>음을 부른답니다!' },
-    { title:'외워봐요!', text:'<b>도=C  레=D  미=E  파=F</b><br><b>솔=G  라=A  시=B</b>', highlight:'C D E F G A B<br>도 레 미 파 솔 라 시' },
+    { title:'영어 계이름! 🎹', text:'전 세계에서는 <b>알파벳</b>으로<br>음을 부른답니다!', piano:['도','레','미','파','솔','라','시'] },
+    { title:'외워봐요!', text:'<b>도=C  레=D  미=E  파=F</b><br><b>솔=G  라=A  시=B</b>', highlight:'C D E F G A B<br>도 레 미 파 솔 라 시', piano:['도','레','미','파','솔','라','시'] },
   ],
   interval1: [
     { title:'음정이란? 📏', text:'두 음 사이의 <b>거리</b>를 음정이라고 해요!' },
@@ -2237,6 +2237,43 @@ const TUTORIALS = {
     { title:'파이팅! 💪', text:'틀려도 괜찮아요!<br>하나씩 풀어보면 돼요!' },
   ],
 };
+
+function drawPianoSVG(highlightKeys) {
+  // highlightKeys: ['도'], ['도','레','미'], ['도♯'], etc.
+  const whites = [
+    {note:'도', x:0}, {note:'레', x:40}, {note:'미', x:80},
+    {note:'파', x:120}, {note:'솔', x:160}, {note:'라', x:200}, {note:'시', x:240}
+  ];
+  const blacks = [
+    {note:'도♯', x:28}, {note:'레♯', x:68},
+    {note:'파♯', x:148}, {note:'솔♯', x:188}, {note:'라♯', x:228}
+  ];
+  const W=280, H=120;
+  let svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="width:100%;max-width:280px;height:auto;margin:10px auto;display:block">`;
+  // white keys
+  whites.forEach(k => {
+    const hl = highlightKeys.includes(k.note);
+    svg += `<rect x="${k.x}" y="0" width="38" height="${H}" rx="4"
+      fill="${hl ? '#6A9FC5' : '#fff'}" stroke="#bbb" stroke-width="1.5"/>`;
+    svg += `<text x="${k.x+19}" y="${H-10}" text-anchor="middle"
+      font-size="13" font-weight="${hl?'700':'400'}" fill="${hl?'#fff':'#888'}">${k.note}</text>`;
+  });
+  // black keys
+  blacks.forEach(k => {
+    const hl = highlightKeys.includes(k.note);
+    svg += `<rect x="${k.x}" y="0" width="24" height="72" rx="3"
+      fill="${hl ? '#E8CD5A' : '#333'}" stroke="#222" stroke-width="1"/>`;
+    if(hl) svg += `<text x="${k.x+12}" y="65" text-anchor="middle" font-size="9" font-weight="700" fill="#333">${k.note}</text>`;
+  });
+  // highlight dot
+  whites.forEach(k => {
+    if(highlightKeys.includes(k.note)) {
+      svg += `<circle cx="${k.x+19}" cy="${H-30}" r="6" fill="#fff" opacity="0.6"/>`;
+    }
+  });
+  svg += `</svg>`;
+  return svg;
+}
 
 let tutState = null;
 
@@ -2262,6 +2299,7 @@ function renderTutPage() {
   let html = `<h3>${page.title}</h3><p>${page.text}</p>`;
   if (page.example) html += `<div class="example">${page.example}</div>`;
   if (page.highlight) html += `<div class="highlight">${page.highlight}</div>`;
+  if (page.piano) html += drawPianoSVG(page.piano);
   if (page.canvas) html += `<canvas id="tut-canvas" width="200" height="100" style="width:180px;height:90px;background:#fafafa;border-radius:12px"></canvas>`;
   document.getElementById('tut-bubble').innerHTML = html;
 
