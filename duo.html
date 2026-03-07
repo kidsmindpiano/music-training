@@ -182,6 +182,33 @@ body { font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:
 
 .dash-back { display:block; margin:20px auto; padding:12px 28px; border:none; border-radius:12px; font-size:15px; font-weight:700; cursor:pointer; background:var(--blue); color:#fff; }
 
+/* ===== TUTORIAL ===== */
+.tut-screen { min-height:100vh; background:linear-gradient(135deg,#e8f0fe,#fce4ec); display:flex; flex-direction:column; }
+.tut-top { padding:12px 16px; display:flex; align-items:center; gap:8px; }
+.tut-top .close-btn { font-size:24px; color:#999; background:none; border:none; cursor:pointer; }
+.tut-dots { display:flex; gap:6px; flex:1; justify-content:center; }
+.tut-dot { width:10px; height:10px; border-radius:50%; background:#ddd; transition:all .3s; }
+.tut-dot.active { background:var(--blue); width:24px; border-radius:5px; }
+.tut-dot.done { background:var(--green); }
+
+.tut-body { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
+.tut-char { position:relative; margin-bottom:16px; }
+.tut-char .char-body { width:90px; height:90px; border-radius:50%; background:linear-gradient(135deg,#6A9FC5,#5a8fb5); display:flex; align-items:center; justify-content:center; font-size:44px; box-shadow:0 6px 20px rgba(106,159,197,0.3); animation:charBounce 2s infinite; }
+@keyframes charBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+.tut-char .char-hat { position:absolute; top:-14px; left:50%; transform:translateX(-50%); font-size:28px; }
+
+.tut-bubble { background:#fff; border-radius:20px; padding:24px 20px; max-width:340px; width:90%; box-shadow:0 4px 15px rgba(0,0,0,0.08); position:relative; margin-bottom:20px; text-align:center; }
+.tut-bubble::before { content:''; position:absolute; top:-10px; left:50%; transform:translateX(-50%); border-left:10px solid transparent; border-right:10px solid transparent; border-bottom:10px solid #fff; }
+.tut-bubble h3 { font-size:18px; color:var(--blue); margin-bottom:10px; }
+.tut-bubble p { font-size:15px; line-height:1.6; color:#444; margin-bottom:8px; }
+.tut-bubble .highlight { background:#f0f7ff; padding:10px 14px; border-radius:12px; margin:10px 0; font-size:16px; }
+.tut-bubble .example { font-size:32px; margin:8px 0; }
+.tut-bubble canvas { margin:8px auto; display:block; }
+
+.tut-next { padding:14px 48px; border:none; border-radius:14px; font-size:17px; font-weight:700; color:#fff; background:var(--blue); cursor:pointer; transition:all .2s; }
+.tut-next:hover { transform:scale(1.05); }
+.tut-skip { margin-top:10px; font-size:13px; color:var(--sub); cursor:pointer; background:none; border:none; }
+
 /* ===== RESPONSIVE ===== */
 @media(max-width:400px) {
   .path-node { width:62px; height:62px; font-size:24px; }
@@ -262,6 +289,23 @@ body { font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:
 
   <div style="text-align:center;padding:0 16px 30px">
     <a href="play.html" style="color:var(--blue);font-size:14px">🎮 미니게임 하러가기</a>
+  </div>
+</div>
+
+<!-- ===== TUTORIAL SCREEN ===== -->
+<div id="screen-tutorial" class="screen tut-screen">
+  <div class="tut-top">
+    <button class="close-btn" onclick="skipTutorial()">✕</button>
+    <div class="tut-dots" id="tut-dots"></div>
+  </div>
+  <div class="tut-body">
+    <div class="tut-char">
+      <div class="char-hat">🎓</div>
+      <div class="char-body">🎵</div>
+    </div>
+    <div class="tut-bubble" id="tut-bubble"></div>
+    <button class="tut-next" id="tut-next" onclick="nextTutorial()">다음 →</button>
+    <button class="tut-skip" onclick="skipTutorial()">건너뛰기</button>
   </div>
 </div>
 
@@ -725,7 +769,13 @@ function openSkill(skillIdx) {
   if (!st.unlocked) return;
   currentSkillIdx = skillIdx;
   currentLessonIdx = Math.min(st.lessonsCompleted, skill.lessons.length - 1);
-  startLesson();
+
+  // 첫 번째 레슨이면 튜토리얼 먼저
+  if (currentLessonIdx === 0 && TUTORIALS[skill.id]) {
+    showTutorial(skill.id);
+  } else {
+    startLesson();
+  }
 }
 
 function startLesson() {
@@ -2054,6 +2104,201 @@ function renderHearts() {
 function updateLessonProgress() {
   const pct = lessonState.total > 0 ? (lessonState.current / lessonState.total * 100) : 0;
   document.getElementById('lesson-progress').style.width = pct + '%';
+}
+
+// ============================================================
+// TUTORIALS
+// ============================================================
+const TUTORIALS = {
+  note1: [
+    { title:'안녕! 나는 음표야 🎵', text:'오늘부터 음악을 배워볼 거야!<br>먼저 <b>도, 레, 미</b> 세 개의 음을 배워보자!' },
+    { title:'오선지란? 🎼', text:'음악은 <b>5개의 줄</b> 위에 적어요.<br>이걸 <b>오선지</b>라고 해요!', canvas:'staff' },
+    { title:'도 (C) 🎹', text:'<b>도</b>는 오선지 <b>아래 덧줄</b>에 있어요!', canvas:'noteC' },
+    { title:'레 (D)', text:'<b>레</b>는 첫째 줄 바로 <b>아래 칸</b>에 있어요!', canvas:'noteD' },
+    { title:'미 (E)', text:'<b>미</b>는 <b>첫째 줄</b> 위에 있어요!', canvas:'noteE' },
+    { title:'자, 시작해볼까? 🎉', text:'도, 레, 미를 오선지에서 찾아보자!<br>소리도 들어보면서 맞춰봐요!' },
+  ],
+  note2: [
+    { title:'새로운 음이야! 🎶', text:'이번엔 <b>파</b>와 <b>솔</b>을 배워볼 거야!' },
+    { title:'파 (F)', text:'<b>파</b>는 첫째 줄과 둘째 줄 사이 <b>첫째 칸</b>이에요!', canvas:'noteF' },
+    { title:'솔 (G)', text:'<b>솔</b>은 <b>둘째 줄</b> 위에 있어요!', canvas:'noteG' },
+    { title:'5개 음 완성! 🎉', text:'도레미파솔! 5개의 음을 알게 됐어요!<br>이제 퀴즈로 연습해봐요!' },
+  ],
+  note3: [
+    { title:'마지막 두 음! 🌟', text:'<b>라</b>와 <b>시</b>를 배우면 7개 음 완성!' },
+    { title:'라 (A)', text:'<b>라</b>는 둘째 줄과 셋째 줄 사이<br><b>둘째 칸</b>이에요!', canvas:'noteA' },
+    { title:'시 (B)', text:'<b>시</b>는 <b>셋째 줄</b> 위에 있어요!', canvas:'noteB' },
+    { title:'도레미파솔라시! 🎉', text:'7개 음을 모두 배웠어요!<br>이제 어떤 음이든 찾을 수 있어요!' },
+  ],
+  notename1: [
+    { title:'음표의 종류 📝', text:'음표마다 <b>길이</b>가 달라요!<br>길이에 따라 모양이 바뀌어요.' },
+    { title:'온음표 = 4박', text:'<b>속이 빈 동그라미</b>, 줄기 없음!<br>가장 긴 음표예요.', highlight:'𝅝 → 4박 (하나, 둘, 셋, 넷)' },
+    { title:'2분음표 = 2박', text:'<b>속이 빈 동그라미</b>에 <b>줄기</b>가 있어요!', highlight:'𝅗𝅥 → 2박 (하나, 둘)' },
+    { title:'4분음표 = 1박', text:'<b>속이 찬 동그라미</b>에 <b>줄기</b>!<br>기본이 되는 음표예요.', highlight:'♩ → 1박 (하나)' },
+    { title:'8분음표 = 반 박', text:'4분음표에 <b>꼬리 1개</b> 추가!', highlight:'♪ → 반 박' },
+  ],
+  accidental1: [
+    { title:'샵과 플랫! ♯♭', text:'음을 <b>살짝 바꾸는</b> 신기한 기호예요!' },
+    { title:'샵 ♯ = 반음 올림', text:'<b>♯</b>이 붙으면 음이 <b>살짝 올라가요!</b>', highlight:'도♯ = 도보다 조금 높은 음', example:'♯' },
+    { title:'플랫 ♭ = 반음 내림', text:'<b>♭</b>이 붙으면 음이 <b>살짝 내려가요!</b>', highlight:'레♭ = 레보다 조금 낮은 음', example:'♭' },
+    { title:'쉽죠? 😊', text:'샵은 올리고, 플랫은 내리고!<br>이제 퀴즈로 확인해봐요!' },
+  ],
+  rhythm1: [
+    { title:'리듬을 배워요! 🥁', text:'음표마다 길이가 달라서<br><b>리듬</b>이 만들어져요!' },
+    { title:'음표 모양을 기억해요', text:'머리가 비었나? 채워졌나?<br>줄기가 있나? 꼬리가 있나?<br>이걸로 구분해요!' },
+    { title:'자, 맞춰봐요! 🎉', text:'음표 그림을 보고 이름을 맞춰봐요!' },
+  ],
+  rhythm2: [
+    { title:'리듬 박수! 👏', text:'이번엔 직접 리듬을 쳐볼 거야!<br>음표를 보고 <b>박자만큼 꾹</b> 눌러봐요!' },
+    { title:'긴 음표 = 오래 누르기', text:'온음표(4박)는 오~래 누르고<br>4분음표(1박)는 짧게!', highlight:'온음표: 꾸우우욱~<br>4분음표: 딱!' },
+    { title:'시작할게요! 🥁', text:'메트로놈 소리에 맞춰<br>음표가 오면 꾹 눌러봐요!' },
+  ],
+  ear1: [
+    { title:'귀를 열어요! 👂', text:'소리를 듣고 어떤 음인지<br>맞춰보는 거예요!' },
+    { title:'소리를 잘 들어봐요 🔊', text:'🔊 버튼을 누르면 소리가 나와요.<br>높은 소리? 낮은 소리?<br>어떤 음일지 생각해봐요!' },
+    { title:'시작! 🎧', text:'처음엔 어려워도 괜찮아요!<br>자꾸 들으면 귀가 좋아져요!' },
+  ],
+  highlow: [
+    { title:'높낮이를 구분해요! 📊', text:'두 개의 소리를 듣고<br><b>어떤 게 더 높은지</b> 맞춰봐요!' },
+    { title:'높은 음 vs 낮은 음', text:'<b>도</b>가 가장 낮고 <b>시</b>가 가장 높아요!', highlight:'도 < 레 < 미 < 파 < 솔 < 라 < 시' },
+    { title:'들어보자! 🎧', text:'두 소리를 잘 비교해봐요!' },
+  ],
+  slur1: [
+    { title:'이음줄과 붙임줄! 🔗', text:'음을 이어주는 <b>곡선</b>이에요!' },
+    { title:'이음줄 = 다른 음 잇기', text:'<b>다른 높이</b>의 음을 부드럽게 연결!<br>이걸 <b>레가토</b>라고 해요.', highlight:'미~솔~파 → 매끄럽게~' },
+    { title:'붙임줄 = 같은 음 잇기', text:'<b>같은 높이</b>의 음을 이으면<br><b>박자를 합쳐요!</b>', highlight:'미(1박) + 미(1박) = 미(2박)' },
+  ],
+  staccato1: [
+    { title:'스타카토! ⚡', text:'음표 위에 <b>점</b>이 있으면<br><b>짧게 끊어서</b> 연주해요!' },
+    { title:'스타카토 vs 레가토', text:'<b>스타카토(•)</b> = 짧게 톡톡!<br><b>레가토</b> = 길게 이어서~', highlight:'스타카토: 딱! 딱! 딱!<br>레가토: 라~~아~~' },
+  ],
+  dynamics: [
+    { title:'셈여림! 🔊', text:'음악에도 <b>크기</b>가 있어요!<br>세게? 여리게?' },
+    { title:'기호를 배워요', text:'<b>p</b> = 여리게 (피아노 🤫)<br><b>f</b> = 세게 (포르테 💪)', highlight:'pp → p → mp → mf → f → ff<br>여리게 ←――――――→ 세게' },
+  ],
+  tempo1: [
+    { title:'빠르기말! ⏱️', text:'음악이 얼마나 빠른지<br><b>이탈리아어</b>로 표시해요!' },
+    { title:'대표적인 빠르기말', text:'<b>Adagio</b> = 느리게 🐌<br><b>Andante</b> = 걸어가듯 🚶<br><b>Allegro</b> = 빠르게 🏃', highlight:'느림 ← Adagio · Andante · Allegro → 빠름' },
+  ],
+  melody1: [
+    { title:'멜로디를 만들어요! 🎤', text:'음이 이어지면 <b>멜로디</b>가 돼요!<br>빈칸에 들어갈 음을 맞춰봐요!' },
+    { title:'소리를 잘 들어봐요 🔊', text:'🔊를 누르면 멜로디가 나와요.<br>? 부분에 어떤 음이 올지 생각해봐요!' },
+  ],
+  order1: [
+    { title:'올라가는 음? 내려가는 음? 🔢', text:'멜로디가 <b>올라가는지 내려가는지</b><br>구분해봐요!' },
+    { title:'예를 들면...', text:'도→레→미 = <b>올라가요 ⬆️</b><br>미→레→도 = <b>내려가요 ⬇️</b>' },
+  ],
+  note4: [
+    { title:'영어 계이름! 🎹', text:'전 세계에서는 <b>알파벳</b>으로<br>음을 부른답니다!' },
+    { title:'외워봐요!', text:'<b>도=C  레=D  미=E  파=F</b><br><b>솔=G  라=A  시=B</b>', highlight:'C D E F G A B<br>도 레 미 파 솔 라 시' },
+  ],
+  interval1: [
+    { title:'음정이란? 📏', text:'두 음 사이의 <b>거리</b>를 음정이라고 해요!' },
+    { title:'쉬운 음정', text:'<b>2도</b>: 도→레 (바로 옆)<br><b>3도</b>: 도→미 (하나 건너)<br><b>5도</b>: 도→솔', highlight:'가까우면 2도, 멀면 5도!' },
+  ],
+  'rhythm-quiz': [
+    { title:'리듬 퀴즈! 🧩', text:'박자를 <b>계산</b>하고<br>빈칸을 <b>채워</b>보는 퀴즈예요!' },
+    { title:'4/4박자란?', text:'한 마디에 <b>4분음표 4개</b>가 들어가요!<br>총 <b>4박</b>이 한 마디!', highlight:'♩+♩+♩+♩ = 4박 = 한 마디' },
+  ],
+  rhythm3: [
+    { title:'음표 길이 비교! 📐', text:'어떤 음표가 더 <b>긴지</b> 맞춰봐요!' },
+    { title:'길이 순서', text:'온음표(4) > 2분음표(2) > 4분음표(1) > 8분음표(½)', highlight:'온 > 2분 > 4분 > 8분 > 16분' },
+  ],
+  master: [
+    { title:'마스터 도전! 👑', text:'지금까지 배운 <b>모든 것</b>이 나와요!<br>잘 할 수 있겠죠?' },
+    { title:'파이팅! 💪', text:'틀려도 괜찮아요!<br>하나씩 풀어보면 돼요!' },
+  ],
+};
+
+let tutState = null;
+
+function showTutorial(skillId) {
+  const pages = TUTORIALS[skillId];
+  if (!pages || pages.length === 0) { startLesson(); return; }
+  tutState = { pages, current:0, skillId };
+  showScreen('tutorial');
+  renderTutPage();
+}
+
+function renderTutPage() {
+  const {pages, current} = tutState;
+  const page = pages[current];
+
+  // dots
+  const dots = document.getElementById('tut-dots');
+  dots.innerHTML = pages.map((_,i) =>
+    `<div class="tut-dot ${i<current?'done':i===current?'active':''}"></div>`
+  ).join('');
+
+  // bubble
+  let html = `<h3>${page.title}</h3><p>${page.text}</p>`;
+  if (page.example) html += `<div class="example">${page.example}</div>`;
+  if (page.highlight) html += `<div class="highlight">${page.highlight}</div>`;
+  if (page.canvas) html += `<canvas id="tut-canvas" width="200" height="100" style="width:180px;height:90px;background:#fafafa;border-radius:12px"></canvas>`;
+  document.getElementById('tut-bubble').innerHTML = html;
+
+  // button text
+  const btn = document.getElementById('tut-next');
+  btn.textContent = current === pages.length-1 ? '시작하기! 🎵' : '다음 →';
+
+  // draw canvas
+  if (page.canvas) setTimeout(()=>drawTutCanvas(page.canvas), 50);
+}
+
+function drawTutCanvas(type) {
+  const c = document.getElementById('tut-canvas'); if(!c) return;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,200,100);
+
+  if (type === 'staff') {
+    ctx.strokeStyle='#999'; ctx.lineWidth=1.5;
+    for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(20,20+i*14);ctx.lineTo(180,20+i*14);ctx.stroke();}
+    ctx.font='46px serif'; ctx.fillStyle='#6A9FC5'; ctx.fillText('𝄞',6,65);
+    ctx.font='13px sans-serif'; ctx.fillStyle='#999'; ctx.textAlign='center';
+    ctx.fillText('← 이게 오선지예요!',110,95); ctx.textAlign='start';
+    return;
+  }
+
+  // 음표 그리기
+  const noteMap = {noteC:'C4',noteD:'D4',noteE:'E4',noteF:'F4',noteG:'G4',noteA:'A4',noteB:'B4'};
+  const freq = noteMap[type];
+  if (!freq) return;
+
+  const top=15, gap=14;
+  ctx.strokeStyle='#bbb'; ctx.lineWidth=1.2;
+  for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(20,top+i*gap);ctx.lineTo(180,top+i*gap);ctx.stroke();}
+  ctx.font='46px serif'; ctx.fillStyle='#6A9FC5'; ctx.fillText('𝄞',6,top+3.2*gap);
+
+  const line1 = top+4*gap;
+  const yMap={C4:line1+gap*1.5,D4:line1+gap,E4:line1,F4:line1-gap*0.5,G4:line1-gap,A4:line1-gap*1.5,B4:line1-gap*2};
+  const y=yMap[freq]; const x=120;
+
+  if(freq==='C4'){ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-16,line1+gap*1.5);ctx.lineTo(x+16,line1+gap*1.5);ctx.stroke();}
+
+  // 파란색으로 강조
+  ctx.fillStyle='#6A9FC5';
+  ctx.beginPath();ctx.ellipse(x,y,10,7,-0.2,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#6A9FC5';ctx.lineWidth=2;
+  ctx.beginPath();ctx.moveTo(x+9,y);ctx.lineTo(x+9,y-28);ctx.stroke();
+
+  // 화살표
+  ctx.fillStyle='#e53935'; ctx.font='bold 14px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('← 여기!', x+36, y+5); ctx.textAlign='start';
+}
+
+function nextTutorial() {
+  tutState.current++;
+  if (tutState.current >= tutState.pages.length) {
+    tutState = null;
+    startLesson();
+  } else {
+    renderTutPage();
+  }
+}
+
+function skipTutorial() {
+  tutState = null;
+  startLesson();
 }
 
 // ============================================================
