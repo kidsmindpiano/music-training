@@ -196,10 +196,12 @@ body { font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:
 .tut-dot.done { background:var(--green); }
 
 .tut-body { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; }
-.tut-char { position:relative; margin-bottom:16px; }
-.tut-char .char-body { width:90px; height:90px; border-radius:50%; background:linear-gradient(135deg,#6A9FC5,#5a8fb5); display:flex; align-items:center; justify-content:center; font-size:44px; box-shadow:0 6px 20px rgba(106,159,197,0.3); animation:charBounce 2s infinite; }
-@keyframes charBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
-.tut-char .char-hat { position:absolute; top:-14px; left:50%; transform:translateX(-50%); font-size:28px; }
+.tut-char { position:relative; margin-bottom:16px; width:140px; height:120px; }
+.tut-note { position:absolute; animation:noteBounce 2s infinite ease-in-out; }
+.tut-note:nth-child(1) { left:10px; top:0; animation-delay:0s; }
+.tut-note:nth-child(2) { left:45px; top:20px; animation-delay:0.3s; }
+.tut-note:nth-child(3) { left:80px; top:35px; animation-delay:0.6s; }
+@keyframes noteBounce { 0%,100%{transform:translateY(0) rotate(-5deg)} 50%{transform:translateY(-8px) rotate(5deg)} }
 
 .tut-bubble { background:#fff; border-radius:20px; padding:24px 20px; max-width:340px; width:90%; box-shadow:0 4px 15px rgba(0,0,0,0.08); position:relative; margin-bottom:20px; text-align:center; }
 .tut-bubble::before { content:''; position:absolute; top:-10px; left:50%; transform:translateX(-50%); border-left:10px solid transparent; border-right:10px solid transparent; border-bottom:10px solid #fff; }
@@ -304,8 +306,30 @@ body { font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:
   </div>
   <div class="tut-body">
     <div class="tut-char">
-      <div class="char-hat">🎓</div>
-      <div class="char-body">🎵</div>
+      <svg class="tut-note" width="55" height="80" viewBox="0 0 55 80">
+        <ellipse cx="22" cy="58" rx="20" ry="16" fill="#6B89B5" opacity="0.9"/>
+        <rect x="39" y="10" width="4.5" height="50" rx="2" fill="#6B89B5"/>
+        <path d="M41.5 10 Q56 20 45 32" stroke="#6B89B5" fill="none" stroke-width="4.5" stroke-linecap="round"/>
+        <circle cx="16" cy="55" r="2.5" fill="#333"/>
+        <circle cx="28" cy="55" r="2.5" fill="#333"/>
+        <path d="M14 63 Q22 69 30 63" stroke="#333" fill="none" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <svg class="tut-note" width="50" height="75" viewBox="0 0 55 80">
+        <ellipse cx="22" cy="58" rx="20" ry="16" fill="#E8CD5A" opacity="0.9"/>
+        <rect x="39" y="12" width="4.5" height="48" rx="2" fill="#E8CD5A"/>
+        <path d="M41.5 12 Q56 22 45 34" stroke="#E8CD5A" fill="none" stroke-width="4.5" stroke-linecap="round"/>
+        <circle cx="16" cy="55" r="2.5" fill="#333"/>
+        <circle cx="28" cy="55" r="2.5" fill="#333"/>
+        <path d="M14 63 Q22 69 30 63" stroke="#333" fill="none" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <svg class="tut-note" width="45" height="70" viewBox="0 0 55 80">
+        <ellipse cx="22" cy="58" rx="20" ry="16" fill="#F0B8B8" opacity="0.9"/>
+        <rect x="39" y="14" width="4.5" height="46" rx="2" fill="#F0B8B8"/>
+        <path d="M41.5 14 Q56 24 45 36" stroke="#F0B8B8" fill="none" stroke-width="4.5" stroke-linecap="round"/>
+        <circle cx="16" cy="55" r="2.5" fill="#333"/>
+        <circle cx="28" cy="55" r="2.5" fill="#333"/>
+        <path d="M14 63 Q22 69 30 63" stroke="#333" fill="none" stroke-width="2" stroke-linecap="round"/>
+      </svg>
     </div>
     <div class="tut-bubble" id="tut-bubble"></div>
     <button class="tut-next" id="tut-next" onclick="nextTutorial()">다음 →</button>
