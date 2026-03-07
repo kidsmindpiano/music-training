@@ -17,6 +17,7 @@ body { font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:
 /* ===== SCREENS ===== */
 .screen { display:none; min-height:100vh; }
 .screen.active { display:block; }
+.tut-screen.active { display:flex; }
 
 /* ===== TOP BAR ===== */
 .top-bar { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:var(--card); border-bottom:1px solid #eee; position:sticky; top:0; z-index:50; }
@@ -778,8 +779,8 @@ function openSkill(skillIdx) {
   }
 }
 
-function startLesson() {
-  ensureTone();
+async function startLesson() {
+  await ensureTone();
   const skill = SKILLS[currentSkillIdx];
   const lesson = skill.lessons[currentLessonIdx];
 
@@ -2290,7 +2291,7 @@ function nextTutorial() {
   tutState.current++;
   if (tutState.current >= tutState.pages.length) {
     tutState = null;
-    startLesson();
+    try { startLesson(); } catch(e) { alert('오류: '+e.message); console.error(e); }
   } else {
     renderTutPage();
   }
