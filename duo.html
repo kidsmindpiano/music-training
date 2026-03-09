@@ -387,7 +387,7 @@ body { font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:
 // ============================================================
 const NOTE_NAMES = ['도','레','미','파','솔','라','시'];
 const NOTE_ENG = {도:'C',레:'D',미:'E',파:'F',솔:'G',라:'A',시:'B'};
-const NOTE_FREQ = {도:'C4',레:'D4',미:'E4',파:'F4',솔:'G4',라:'A4',시:'B4'};
+const NOTE_FREQ = {도:'C4',레:'D4',미:'E4',파:'F4',솔:'G4',라:'A4',시:'B4','도♯':'C#4','레♯':'D#4','파♯':'F#4','솔♯':'G#4','라♯':'A#4'};
 const ALL_FREQ = ['C4','D4','E4','F4','G4','A4','B4'];
 
 // SKILL TREE — 각 노드가 하나의 스킬 (여러 레슨 포함)
@@ -701,7 +701,7 @@ function getSkillState(id) { return DATA.skills[id] || { lessonsCompleted:0, unl
 function setSkillState(id, s) { DATA.skills[id] = s; save(); }
 
 let synth, toneStarted = false;
-async function ensureTone() { if(!toneStarted){await Tone.start();toneStarted=true;} if(!synth) synth=new Tone.Synth({oscillator:{type:'triangle'},envelope:{attack:0.02,decay:0.25,sustain:0.2,release:0.4}}).toDestination(); }
+async function ensureTone() { if(!toneStarted){await Tone.start();toneStarted=true;} if(!synth) synth=new Tone.Synth({oscillator:{type:'fmsine',modulationIndex:2},envelope:{attack:0.005,decay:0.8,sustain:0.1,release:1.2}}).toDestination(); }
 function playN(name) { ensureTone().then(()=>{ const f=NOTE_FREQ[name]; if(f) synth.triggerAttackRelease(f,'8n'); }); }
 function playFreq(f) { ensureTone().then(()=>synth.triggerAttackRelease(f,'8n')); }
 function playCorrectSfx() { ensureTone().then(()=>{ const s=new Tone.Synth({oscillator:{type:'sine'},envelope:{attack:0.01,decay:0.1,sustain:0.05,release:0.2}}).toDestination(); s.triggerAttackRelease('E5','16n'); setTimeout(()=>{s.triggerAttackRelease('G5','16n');},100); setTimeout(()=>s.dispose(),500); }); }
@@ -2139,24 +2139,24 @@ function updateLessonProgress() {
 // ============================================================
 const TUTORIALS = {
   note1: [
-    { title:'안녕! 나는 음표야 🎵', text:'오늘부터 음악을 배워볼 거야!<br>먼저 <b>도, 레, 미</b> 세 개의 음을 배워보자!', piano:['도','레','미'] },
+    { title:'안녕! 나는 음표야 🎵', text:'오늘부터 음악을 배워볼 거야!<br>먼저 <b>도, 레, 미</b> 세 개의 음을 배워보자!<br>소리를 들어봐요! 🔊', piano:['도','레','미'], sound:['도','레','미'] },
     { title:'오선지란? 🎼', text:'음악은 <b>5개의 줄</b> 위에 적어요.<br>이걸 <b>오선지</b>라고 해요!', canvas:'staff' },
-    { title:'도 (C) 🎹', text:'<b>도</b>는 피아노에서 가장 먼저 배우는 음!<br>오선지에서는 <b>아래 덧줄</b>에 있어요.', piano:['도'], canvas:'noteC' },
-    { title:'레 (D)', text:'<b>레</b>는 도 바로 오른쪽!<br>오선지에서는 첫째 줄 <b>아래 칸</b>이에요.', piano:['레'], canvas:'noteD' },
-    { title:'미 (E)', text:'<b>미</b>는 레 오른쪽!<br>오선지에서는 <b>첫째 줄</b> 위에 있어요.', piano:['미'], canvas:'noteE' },
-    { title:'자, 시작해볼까? 🎉', text:'도, 레, 미를 오선지에서 찾아보자!<br>소리도 들어보면서 맞춰봐요!', piano:['도','레','미'] },
+    { title:'도 (C) 🎹', text:'<b>도</b>는 피아노에서 가장 먼저 배우는 음!<br>오선지에서는 <b>아래 덧줄</b>에 있어요.', piano:['도'], canvas:'noteC', sound:['도'] },
+    { title:'레 (D)', text:'<b>레</b>는 도 바로 오른쪽!<br>오선지에서는 첫째 줄 <b>아래 칸</b>이에요.', piano:['레'], canvas:'noteD', sound:['레'] },
+    { title:'미 (E)', text:'<b>미</b>는 레 오른쪽!<br>오선지에서는 <b>첫째 줄</b> 위에 있어요.', piano:['미'], canvas:'noteE', sound:['미'] },
+    { title:'자, 시작해볼까? 🎉', text:'도, 레, 미를 오선지에서 찾아보자!<br>소리를 잘 기억해봐요!', piano:['도','레','미'], sound:['도','레','미'] },
   ],
   note2: [
-    { title:'새로운 음이야! 🎶', text:'이번엔 <b>파</b>와 <b>솔</b>을 배워볼 거야!', piano:['파','솔'] },
-    { title:'파 (F)', text:'<b>파</b>는 미 오른쪽! 검은 건반 없이 바로 붙어있어요.<br>오선지에서는 <b>첫째 칸</b>이에요.', piano:['파'], canvas:'noteF' },
-    { title:'솔 (G)', text:'<b>솔</b>은 파 오른쪽!<br>오선지에서는 <b>둘째 줄</b> 위에 있어요.', piano:['솔'], canvas:'noteG' },
-    { title:'5개 음 완성! 🎉', text:'도레미파솔! 5개의 음을 알게 됐어요!', piano:['도','레','미','파','솔'] },
+    { title:'새로운 음이야! 🎶', text:'이번엔 <b>파</b>와 <b>솔</b>을 배워볼 거야!<br>소리를 들어봐요!', piano:['파','솔'], sound:['파','솔'] },
+    { title:'파 (F)', text:'<b>파</b>는 미 오른쪽! 검은 건반 없이 바로 붙어있어요.<br>오선지에서는 <b>첫째 칸</b>이에요.', piano:['파'], canvas:'noteF', sound:['파'] },
+    { title:'솔 (G)', text:'<b>솔</b>은 파 오른쪽!<br>오선지에서는 <b>둘째 줄</b> 위에 있어요.', piano:['솔'], canvas:'noteG', sound:['솔'] },
+    { title:'5개 음 완성! 🎉', text:'도레미파솔! 5개의 음을 알게 됐어요!', piano:['도','레','미','파','솔'], sound:['도','레','미','파','솔'] },
   ],
   note3: [
-    { title:'마지막 두 음! 🌟', text:'<b>라</b>와 <b>시</b>를 배우면 7개 음 완성!', piano:['라','시'] },
-    { title:'라 (A)', text:'<b>라</b>는 솔 오른쪽!<br>오선지에서는 <b>둘째 칸</b>이에요.', piano:['라'], canvas:'noteA' },
-    { title:'시 (B)', text:'<b>시</b>는 라 오른쪽! 제일 높은 흰 건반!<br>오선지에서는 <b>셋째 줄</b> 위에 있어요.', piano:['시'], canvas:'noteB' },
-    { title:'도레미파솔라시! 🎉', text:'7개 음을 모두 배웠어요!<br>피아노 건반 위치도 기억해봐요!', piano:['도','레','미','파','솔','라','시'] },
+    { title:'마지막 두 음! 🌟', text:'<b>라</b>와 <b>시</b>를 배우면 7개 음 완성!<br>소리를 들어봐요!', piano:['라','시'], sound:['라','시'] },
+    { title:'라 (A)', text:'<b>라</b>는 솔 오른쪽!<br>오선지에서는 <b>둘째 칸</b>이에요.', piano:['라'], canvas:'noteA', sound:['라'] },
+    { title:'시 (B)', text:'<b>시</b>는 라 오른쪽! 제일 높은 흰 건반!<br>오선지에서는 <b>셋째 줄</b> 위에 있어요.', piano:['시'], canvas:'noteB', sound:['시'] },
+    { title:'도레미파솔라시! 🎉', text:'7개 음을 모두 배웠어요!<br>전부 들어봐요!', piano:['도','레','미','파','솔','라','시'], sound:['도','레','미','파','솔','라','시'] },
   ],
   notename1: [
     { title:'음표의 종류 📝', text:'음표마다 <b>길이</b>가 달라요!<br>길이에 따라 모양이 바뀌어요.' },
@@ -2167,8 +2167,8 @@ const TUTORIALS = {
   ],
   accidental1: [
     { title:'샵과 플랫! ♯♭', text:'음을 <b>살짝 바꾸는</b> 신기한 기호예요!<br>피아노의 <b>검은 건반</b>이 바로 이거예요!', piano:['도♯','레♯','파♯','솔♯','라♯'] },
-    { title:'샵 ♯ = 반음 올림', text:'<b>♯</b>이 붙으면 <b>오른쪽 검은 건반</b>으로!<br>도 → 도♯ (살짝 올라감)', piano:['도','도♯'] },
-    { title:'플랫 ♭ = 반음 내림', text:'<b>♭</b>이 붙으면 <b>왼쪽 검은 건반</b>으로!<br>레 → 레♭ (살짝 내려감)', piano:['레','도♯'] },
+    { title:'샵 ♯ = 반음 올림', text:'<b>♯</b>이 붙으면 <b>오른쪽 검은 건반</b>으로!<br>도 → 도♯ 들어봐요! 살짝 올라가죠?', piano:['도','도♯'], sound:['도','도♯'] },
+    { title:'플랫 ♭ = 반음 내림', text:'<b>♭</b>이 붙으면 <b>왼쪽 검은 건반</b>으로!<br>레 → 레♭ 들어봐요! 살짝 내려가죠?', piano:['레','도♯'], sound:['레','도♯'] },
     { title:'쉽죠? 😊', text:'검은 건반 = 샵 또는 플랫!<br>이제 퀴즈로 확인해봐요!', piano:['도♯','레♯','파♯','솔♯','라♯'] },
   ],
   rhythm1: [
@@ -2182,13 +2182,13 @@ const TUTORIALS = {
     { title:'시작할게요! 🥁', text:'메트로놈 소리에 맞춰<br>음표가 오면 꾹 눌러봐요!' },
   ],
   ear1: [
-    { title:'귀를 열어요! 👂', text:'소리를 듣고 어떤 음인지<br>맞춰보는 거예요!', piano:['도','레','미'] },
-    { title:'소리를 잘 들어봐요 🔊', text:'🔊 버튼을 누르면 소리가 나와요.<br>높은 소리? 낮은 소리?<br>어떤 음일지 생각해봐요!', piano:['도','미','솔'] },
+    { title:'귀를 열어요! 👂', text:'소리를 듣고 어떤 음인지<br>맞춰보는 거예요!<br>먼저 각 음의 소리를 익혀봐요!', piano:['도','레','미'], sound:['도','레','미'] },
+    { title:'소리를 잘 들어봐요 🔊', text:'각 음마다 소리가 달라요!<br><b>도</b>는 낮고, <b>미</b>는 높아요.<br>들어보고 차이를 느껴봐요!', piano:['도','미','솔'], sound:['도','미','솔'] },
     { title:'시작! 🎧', text:'처음엔 어려워도 괜찮아요!<br>자꾸 들으면 귀가 좋아져요!' },
   ],
   highlow: [
     { title:'높낮이를 구분해요! 📊', text:'두 개의 소리를 듣고<br><b>어떤 게 더 높은지</b> 맞춰봐요!' },
-    { title:'높은 음 vs 낮은 음', text:'피아노에서 <b>오른쪽</b>으로 갈수록 높아요!<br><b>도</b>가 가장 낮고 <b>시</b>가 가장 높아요!', piano:['도','레','미','파','솔','라','시'] },
+    { title:'높은 음 vs 낮은 음', text:'피아노에서 <b>오른쪽</b>으로 갈수록 높아요!<br>도→시 순서로 들어봐요!', piano:['도','레','미','파','솔','라','시'], sound:['도','레','미','파','솔','라','시'] },
     { title:'들어보자! 🎧', text:'두 소리를 잘 비교해봐요!' },
   ],
   slur1: [
@@ -2221,8 +2221,8 @@ const TUTORIALS = {
     { title:'외워봐요!', text:'<b>도=C  레=D  미=E  파=F</b><br><b>솔=G  라=A  시=B</b>', highlight:'C D E F G A B<br>도 레 미 파 솔 라 시', piano:['도','레','미','파','솔','라','시'] },
   ],
   interval1: [
-    { title:'음정이란? 📏', text:'두 음 사이의 <b>거리</b>를 음정이라고 해요!' },
-    { title:'쉬운 음정', text:'<b>2도</b>: 도→레 (바로 옆)<br><b>3도</b>: 도→미 (하나 건너)<br><b>5도</b>: 도→솔', highlight:'가까우면 2도, 멀면 5도!' },
+    { title:'음정이란? 📏', text:'두 음 사이의 <b>거리</b>를 음정이라고 해요!<br>가까운 음과 먼 음의 차이를 들어봐요!' },
+    { title:'쉬운 음정', text:'<b>2도</b>: 도→레 (바로 옆)<br><b>3도</b>: 도→미 (하나 건너)<br><b>5도</b>: 도→솔 (멀리!)', highlight:'가까우면 2도, 멀면 5도!', piano:['도','레','미','솔'], sound:['도','레'] },
   ],
   'rhythm-quiz': [
     { title:'리듬 퀴즈! 🧩', text:'박자를 <b>계산</b>하고<br>빈칸을 <b>채워</b>보는 퀴즈예요!' },
@@ -2275,6 +2275,16 @@ function drawPianoSVG(highlightKeys) {
   return svg;
 }
 
+function playTutNote(notes) {
+  ensureTone().then(()=>{
+    const now = Tone.now();
+    notes.forEach((n, i) => {
+      const f = NOTE_FREQ[n];
+      if(f) synth.triggerAttackRelease(f, '2n', now + i*0.6);
+    });
+  });
+}
+
 let tutState = null;
 
 function showTutorial(skillId) {
@@ -2300,6 +2310,7 @@ function renderTutPage() {
   if (page.example) html += `<div class="example">${page.example}</div>`;
   if (page.highlight) html += `<div class="highlight">${page.highlight}</div>`;
   if (page.piano) html += drawPianoSVG(page.piano);
+  if (page.sound) html += `<button onclick="playTutNote(${JSON.stringify(page.sound)})" style="margin:10px auto;display:flex;align-items:center;gap:8px;padding:12px 24px;border:2px solid var(--blue);border-radius:14px;background:#f0f7ff;cursor:pointer;font-size:15px;font-weight:700;color:var(--blue)">🔊 소리 들어보기</button>`;
   if (page.canvas) html += `<canvas id="tut-canvas" width="200" height="100" style="width:180px;height:90px;background:#fafafa;border-radius:12px"></canvas>`;
   document.getElementById('tut-bubble').innerHTML = html;
 
