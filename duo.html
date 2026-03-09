@@ -2343,7 +2343,7 @@ function renderTutPage() {
   if (page.example) html += `<div class="example">${page.example}</div>`;
   if (page.highlight) html += `<div class="highlight">${page.highlight}</div>`;
   if (page.piano) html += drawPianoSVG(page.piano);
-  if (page.sound) html += `<button onclick="playTutNote(${JSON.stringify(page.sound)})" style="margin:10px auto;display:flex;align-items:center;gap:8px;padding:12px 24px;border:2px solid var(--blue);border-radius:14px;background:#f0f7ff;cursor:pointer;font-size:15px;font-weight:700;color:var(--blue)">🔊 소리 들어보기</button>`;
+  if (page.sound) html += `<button onclick="playTutNote(${JSON.stringify(page.sound)})" style="margin:10px auto;display:flex;align-items:center;gap:8px;padding:12px 24px;border:2px solid var(--blue);border-radius:14px;background:#f0f7ff;cursor:pointer;font-size:15px;font-weight:700;color:var(--blue)">🔊 다시 듣기</button>`;
   if (page.canvas) html += `<canvas id="tut-canvas" width="200" height="100" style="width:180px;height:90px;background:#fafafa;border-radius:12px"></canvas>`;
   document.getElementById('tut-bubble').innerHTML = html;
 
@@ -2353,6 +2353,8 @@ function renderTutPage() {
 
   // draw canvas
   if (page.canvas) setTimeout(()=>drawTutCanvas(page.canvas), 50);
+  // 자동 소리 재생
+  if (page.sound && toneStarted) setTimeout(()=>playTutNote(page.sound), 300);
 }
 
 function drawTutCanvas(type) {
