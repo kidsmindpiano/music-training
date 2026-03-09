@@ -701,7 +701,7 @@ function getSkillState(id) { return DATA.skills[id] || { lessonsCompleted:0, unl
 function setSkillState(id, s) { DATA.skills[id] = s; save(); }
 
 let synth, toneStarted = false;
-async function ensureTone() { if(!toneStarted){await Tone.start();toneStarted=true;} if(!synth) synth=new Tone.Synth({oscillator:{type:'fmsine',modulationIndex:2},envelope:{attack:0.005,decay:0.8,sustain:0.1,release:1.2}}).toDestination(); }
+async function ensureTone() { if(!toneStarted){await Tone.start();toneStarted=true;} if(!synth) synth=new Tone.Synth({oscillator:{type:'triangle'},envelope:{attack:0.01,decay:0.5,sustain:0.15,release:0.8},volume:-3}).toDestination(); }
 function playN(name) { ensureTone().then(()=>{ const f=NOTE_FREQ[name]; if(f) synth.triggerAttackRelease(f,'8n'); }); }
 function playFreq(f) { ensureTone().then(()=>synth.triggerAttackRelease(f,'8n')); }
 function playCorrectSfx() { ensureTone().then(()=>{ const s=new Tone.Synth({oscillator:{type:'sine'},envelope:{attack:0.01,decay:0.1,sustain:0.05,release:0.2}}).toDestination(); s.triggerAttackRelease('E5','16n'); setTimeout(()=>{s.triggerAttackRelease('G5','16n');},100); setTimeout(()=>s.dispose(),500); }); }
