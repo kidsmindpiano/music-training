@@ -1433,7 +1433,7 @@ function drawStaffQ(q) {
   ctx.strokeStyle='#bbb'; ctx.lineWidth=1.5;
   for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(40,35+i*15);ctx.lineTo(360,35+i*15);ctx.stroke();}
   // clef
-  ctx.font='120px serif'; ctx.fillStyle='#6A9FC5'; ctx.fillText('𝄞',0,105);
+  ctx.font='80px serif'; ctx.fillStyle='#6A9FC5'; ctx.fillText('𝄞',20,92);
   // note
   const freq = NOTE_FREQ[q.note];
   const y = noteY(freq);
@@ -1451,7 +1451,7 @@ function drawMelodyQ(q) {
   ctx.clearRect(0,0,400,160);
   ctx.strokeStyle='#bbb'; ctx.lineWidth=1.5;
   for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(40,35+i*15);ctx.lineTo(360,35+i*15);ctx.stroke();}
-  ctx.font='120px serif'; ctx.fillStyle='#6A9FC5'; ctx.fillText('𝄞',0,105);
+  ctx.font='80px serif'; ctx.fillStyle='#6A9FC5'; ctx.fillText('𝄞',20,92);
 
   const spacing = 260 / q.melody.length;
   q.melody.forEach((note, i) => {
@@ -1523,7 +1523,7 @@ function drawSlurVisual(q) {
   const ctx=c.getContext('2d');ctx.clearRect(0,0,400,160);
   ctx.strokeStyle='#bbb';ctx.lineWidth=1.5;
   for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(40,35+i*15);ctx.lineTo(360,35+i*15);ctx.stroke();}
-  ctx.font='120px serif'; ctx.fillStyle='#6A9FC5'; ctx.fillText('𝄞',0,105);
+  ctx.font='80px serif'; ctx.fillStyle='#6A9FC5'; ctx.fillText('𝄞',20,92);
 
   if(q.isTie) {
     // 붙임줄: 같은 높이 두 음
@@ -1681,7 +1681,7 @@ function drawAccidentalQ(q) {
   const ctx=c.getContext('2d');ctx.clearRect(0,0,400,160);
   ctx.strokeStyle='#bbb';ctx.lineWidth=1.5;
   for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(40,35+i*15);ctx.lineTo(360,35+i*15);ctx.stroke();}
-  ctx.font='120px serif'; ctx.fillStyle='#6A9FC5'; ctx.fillText('𝄞',0,105);
+  ctx.font='80px serif'; ctx.fillStyle='#6A9FC5'; ctx.fillText('𝄞',20,92);
 
   // 기본음 위치 찾기
   const baseNote = q.note.between[0];
@@ -1733,7 +1733,7 @@ function drawDirectionQ(q) {
   ctx.clearRect(0,0,400,160);
   ctx.strokeStyle='#bbb'; ctx.lineWidth=1.5;
   for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(40,35+i*15);ctx.lineTo(360,35+i*15);ctx.stroke();}
-  ctx.font='120px serif'; ctx.fillStyle='#6A9FC5'; ctx.fillText('𝄞',0,105);
+  ctx.font='80px serif'; ctx.fillStyle='#6A9FC5'; ctx.fillText('𝄞',20,92);
   const spacing = 260 / q.melody.length;
   q.melody.forEach((note,i)=>{
     const x=90+i*spacing, freq=NOTE_FREQ[note], y=noteY(freq);
