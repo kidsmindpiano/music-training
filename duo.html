@@ -1607,7 +1607,7 @@ function drawOptNotes(q) {
 // --- 음표 이름 그리기 (SVG) ---
 function drawNoteTypeQ(q) {
   const el=document.getElementById('q-note-svg'); if(!el) return;
-  el.innerHTML = buildNoteSVG(q.noteType, 120, 120);
+  el.innerHTML = buildNoteSVG(q.noteType, 160, 140);
 }
 
 function buildNoteSVG(n, w, h) {
@@ -1662,10 +1662,12 @@ function drawRestQ(q) {
     const ry=50+2*16-10;
     shape=`<rect x="${cx-14}" y="${ry}" width="28" height="10" fill="#333"/>`;
   } else if(n.name==='4분쉼표'){
-    // 지그재그 번개 모양
-    shape=`<path d="M${cx-6},65 L${cx+6},80 L${cx-6},95" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>`;
-    shape+=`<path d="M${cx-6},95 Q${cx+8},105 ${cx-2},120" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>`;
-    shape+=`<circle cx="${cx-6}" cy="120" r="5" fill="#333"/>`;
+    // 4분쉼표: 정확한 음악 기호
+    shape=`<g transform="translate(${cx-20},30)">
+      <path d="M22,0 L12,18 L28,36 L12,54" fill="none" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M12,54 C22,62 24,72 16,82" fill="none" stroke="#333" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="12" cy="84" r="7" fill="none" stroke="#333" stroke-width="3.5"/>
+    </g>`;
   }
   el.innerHTML=`<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">${lines}${shape}</svg>`;
 }
