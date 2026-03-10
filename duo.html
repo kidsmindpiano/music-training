@@ -2385,7 +2385,7 @@ function renderTutPage() {
   // draw canvas
   if (page.canvas) setTimeout(()=>drawTutCanvas(page.canvas), 50);
   // 자동 소리 재생
-  if (page.sound && toneStarted) setTimeout(()=>playTutNote(page.sound), 300);
+  if (page.sound) setTimeout(()=>playTutNote(page.sound), 300);
 }
 
 function drawTutCanvas(type) {
