@@ -1665,11 +1665,10 @@ function drawRestQ(q) {
     const ry=50+2*16-10;
     shape=`<rect x="${cx-14}" y="${ry}" width="28" height="10" fill="#333"/>`;
   } else if(n.name==='4분쉼표'){
-    // 4분쉼표: 정확한 음악 기호
-    shape=`<g transform="translate(${cx-20},30)">
-      <path d="M22,0 L12,18 L28,36 L12,54" fill="none" stroke="#333" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M12,54 C22,62 24,72 16,82" fill="none" stroke="#333" stroke-width="4" stroke-linecap="round"/>
-      <circle cx="12" cy="84" r="7" fill="none" stroke="#333" stroke-width="3.5"/>
+    // 4분쉼표: 표준 음악 기호
+    shape=`<g transform="translate(${cx-16},25)">
+      <path d="M20,0 C18,8 8,12 14,22 C20,30 22,34 16,42 C10,50 16,58 16,58 C10,64 6,72 14,80" fill="none" stroke="#333" stroke-width="4.5" stroke-linecap="round"/>
+      <circle cx="10" cy="82" r="7" fill="none" stroke="#333" stroke-width="3.5"/>
     </g>`;
   }
   const svg=`<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">${lines}${shape}</svg>`;
