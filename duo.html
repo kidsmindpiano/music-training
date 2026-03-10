@@ -1600,14 +1600,17 @@ function drawOptNotes(q) {
   q.optNotes.forEach((note, i) => {
     const el = document.getElementById(`opt-note-${i}`);
     if (!el) return;
-    el.innerHTML = buildNoteSVG(note, 60, 52);
+    const svg = buildNoteSVG(note, 60, 52);
+      el.innerHTML = '<img src="data:image/svg+xml,' + encodeURIComponent(svg) + '" width="60" height="52">';
   });
 }
 
 // --- 음표 이름 그리기 (SVG) ---
 function drawNoteTypeQ(q) {
   const el=document.getElementById('q-note-svg'); if(!el) return;
-  el.innerHTML = buildNoteSVG(q.noteType, 160, 140);
+  const svg = buildNoteSVG(q.noteType, 160, 140);
+  const encoded = encodeURIComponent(svg);
+  el.innerHTML = '<img src="data:image/svg+xml,' + encoded + '" width="160" height="140" style="display:block;margin:0 auto">';
 }
 
 function buildNoteSVG(n, w, h) {
@@ -1669,7 +1672,8 @@ function drawRestQ(q) {
       <circle cx="12" cy="84" r="7" fill="none" stroke="#333" stroke-width="3.5"/>
     </g>`;
   }
-  el.innerHTML=`<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">${lines}${shape}</svg>`;
+  const svg=`<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">${lines}${shape}</svg>`;
+  el.innerHTML='<img src="data:image/svg+xml,'+encodeURIComponent(svg)+'" width="'+w+'" height="'+h+'" style="display:block;margin:0 auto">';
 }
 
 // --- 샵/플랫 오선지 ---
