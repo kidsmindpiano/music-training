@@ -387,7 +387,8 @@ body { font-family:'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:
 // ============================================================
 const NOTE_NAMES = ['도','레','미','파','솔','라','시'];
 const NOTE_ENG = {도:'C',레:'D',미:'E',파:'F',솔:'G',라:'A',시:'B'};
-const NOTE_FREQ = {도:'C4',레:'D4',미:'E4',파:'F4',솔:'G4',라:'A4',시:'B4','도♯':'C#4','레♯':'D#4','파♯':'F#4','솔♯':'G#4','라♯':'A#4'};
+const NOTE_FREQ = {도:'C4',레:'D4',미:'E4',파:'F4',솔:'G4',라:'A4',시:'B4','도♯':'C#4','레♯':'D#4','파♯':'F#4','솔♯':'G#4','라♯':'A#4',
+  '낮은도':'C3','낮은레':'D3','낮은미':'E3','낮은파':'F3','낮은솔':'G3','낮은라':'A3','낮은시':'B3'};
 const ALL_FREQ = ['C4','D4','E4','F4','G4','A4','B4'];
 
 // SKILL TREE — 각 노드가 하나의 스킬 (여러 레슨 포함)
@@ -466,6 +467,23 @@ const SKILLS = [
     lessons: [
       { type:'mixed', notePool:['도','레','미','파','솔','라','시'], qCount:10 },
       { type:'mixed', notePool:['도','레','미','파','솔','라','시'], qCount:12 },
+    ]},
+
+  // === UNIT 1.5: 낮은음자리표 ===
+  { id:'bass1', icon:'🎻', label:'낮은 도레미', desc:'낮은음자리표 시작!',
+    lessons: [
+      { type:'bass-staff', notePool:['낮은도','낮은레','낮은미'], qCount:8 },
+      { type:'bass-staff', notePool:['낮은도','낮은레','낮은미'], qCount:10 },
+    ]},
+  { id:'bass2', icon:'🎸', label:'낮은 파솔', desc:'낮은음자리표 파, 솔 추가',
+    lessons: [
+      { type:'bass-staff', notePool:['낮은도','낮은레','낮은미','낮은파','낮은솔'], qCount:10 },
+      { type:'bass-staff', notePool:['낮은도','낮은레','낮은미','낮은파','낮은솔'], qCount:10 },
+    ]},
+  { id:'bass3', icon:'🎺', label:'낮은 라시', desc:'낮은음자리표 완성!',
+    lessons: [
+      { type:'bass-staff', notePool:['낮은도','낮은레','낮은미','낮은파','낮은솔','낮은라','낮은시'], qCount:10 },
+      { type:'bass-staff', notePool:['낮은도','낮은레','낮은미','낮은파','낮은솔','낮은라','낮은시'], qCount:12 },
     ]},
 
   // === UNIT 2: 음표 이름 & 음악 기호 ===
@@ -746,7 +764,7 @@ function renderHome() {
   const path = document.getElementById('skill-path');
   path.innerHTML = '';
 
-  const unitBreaks = {3:'📝 음표 이름 & 기호',7:'🥁 리듬',11:'👂 청음',14:'🎤 멜로디',16:'📚 음악 지식',18:'🏆 종합'};
+  const unitBreaks = {3:'🎻 낮은음자리표',6:'📝 음표 이름 & 기호',10:'🥁 리듬',14:'👂 청음',17:'🎤 멜로디',19:'📚 음악 지식',21:'🏆 종합'};
 
   SKILLS.forEach((skill, idx) => {
     const st = getSkillState(skill.id);
@@ -862,6 +880,7 @@ function generateQuestions(lesson) {
     else if (t === 'direction') { qs.push(genDirectionQ(pool)); }
     else if (t === 'dynamics') { qs.push(genDynamicsQ()); }
     else if (t === 'tempo') { qs.push(genTempoQ()); }
+    else if (t === 'bass-staff') { qs.push(genBassStaffQ(pool)); }
     else {
       // Mixed
       if (lesson.earFocus && r < 0.4) qs.push(genEarQ(pool));
@@ -879,6 +898,13 @@ function genStaffQ(pool) {
   const opts = shuffle(pool).slice(0, Math.min(4, pool.length));
   if (!opts.includes(note)) opts[0] = note;
   return { type:'staff', note, options:shuffle(opts), answer:note, prompt:'이 음의 이름은?' };
+}
+
+function genBassStaffQ(pool) {
+  const note = rand(pool);
+  const opts = shuffle(pool).slice(0, Math.min(4, pool.length));
+  if (!opts.includes(note)) opts[0] = note;
+  return { type:'bass-staff', note, options:shuffle(opts), answer:note, prompt:'이 음의 이름은?' };
 }
 
 function genEarQ(pool) {
@@ -1262,7 +1288,7 @@ function showQuestion() {
   let html = `<div class="q-sub" style="margin-bottom:4px;font-size:13px;color:var(--blue)">문제 ${lessonState.current+1} / ${lessonState.total}</div>`;
   html += `<div class="q-prompt">${q.prompt}</div>`;
 
-  if (q.type === 'staff') {
+  if (q.type === 'staff' || q.type === 'bass-staff') {
     html += `<canvas class="q-staff" id="q-canvas" width="400" height="160"></canvas>`;
   }
   if (q.type === 'ear' || q.type === 'match') {
@@ -1402,6 +1428,7 @@ function showQuestion() {
   // Draw canvas / play sounds after render
   setTimeout(() => {
     if (q.type === 'staff') drawStaffQ(q);
+    if (q.type === 'bass-staff') drawBassStaffQ(q);
     if (q.type === 'melody') drawMelodyQ(q);
     if (q.type === 'rhythm-id') drawRhythmQ(q);
     if (q.type === 'ear') setTimeout(playEarQ, 300);
@@ -1443,6 +1470,28 @@ function drawStaffQ(q) {
   ctx.strokeStyle='#333'; ctx.lineWidth=2;
   ctx.beginPath(); ctx.moveTo(x+10,y); ctx.lineTo(x+10,y-35); ctx.stroke();
   if(freq==='C4'){ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-16,110);ctx.lineTo(x+16,110);ctx.stroke();}
+}
+
+function bassNoteY(n) { return{C3:110,D3:102,E3:95,F3:88,G3:80,A3:73,B3:65}[n]||80; }
+
+function drawBassStaffQ(q) {
+  const c = document.getElementById('q-canvas'); if(!c) return;
+  const ctx = c.getContext('2d');
+  ctx.clearRect(0,0,400,160);
+  // staff
+  ctx.strokeStyle='#bbb'; ctx.lineWidth=1.5;
+  for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(40,35+i*15);ctx.lineTo(360,35+i*15);ctx.stroke();}
+  // bass clef
+  ctx.font='80px serif'; ctx.fillStyle='#6A9FC5'; ctx.fillText('𝄢',20,92);
+  // note
+  const freq = NOTE_FREQ[q.note];
+  const y = bassNoteY(freq);
+  const x = 200;
+  ctx.fillStyle='#333';
+  ctx.beginPath(); ctx.ellipse(x,y,11,8,-0.2,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='#333'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(x+10,y); ctx.lineTo(x+10,y-35); ctx.stroke();
+  if(freq==='C3'){ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-16,110);ctx.lineTo(x+16,110);ctx.stroke();}
 }
 
 function drawMelodyQ(q) {
