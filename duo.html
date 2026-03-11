@@ -923,7 +923,7 @@ function genEngQ(pool) {
 
 function genMatchQ(pool) {
   const note = rand(pool);
-  return { type:'match', note, freq:NOTE_FREQ[note], answer:note, prompt:'오선지의 음과 소리를 듣고 이름을 고르세요',
+  return { type:'match', note, freq:NOTE_FREQ[note], answer:note, prompt:'소리를 듣고 계이름을 맞춰보세요 🔊',
     options: shuffle(pool.slice(0, Math.min(4, pool.length)).includes(note) ? pool.slice(0, Math.min(4, pool.length)) : [note, ...pool.filter(n=>n!==note).slice(0,3)]) };
 }
 
