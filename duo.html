@@ -1478,7 +1478,7 @@ function drawStaffQ(q) {
   if(freq==='C4'){ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-16,110);ctx.lineTo(x+16,110);ctx.stroke();}
 }
 
-function bassNoteY(n) { return{C3:110,D3:102,E3:95,F3:88,G3:80,A3:73,B3:65}[n]||80; }
+function bassNoteY(n) { return{'낮은도':72,'낮은레':65,'낮은미':57,'낮은파':50,'낮은솔':42,'낮은라':35,'낮은시':27}[n]||65; }
 
 function drawBassStaffQ(q) {
   const c = document.getElementById('q-canvas'); if(!c) return;
@@ -1488,16 +1488,16 @@ function drawBassStaffQ(q) {
   ctx.strokeStyle='#bbb'; ctx.lineWidth=1.5;
   for(let i=0;i<5;i++){ctx.beginPath();ctx.moveTo(40,35+i*15);ctx.lineTo(360,35+i*15);ctx.stroke();}
   // bass clef
-  ctx.font='80px serif'; ctx.fillStyle='#6A9FC5'; ctx.fillText('𝄢',20,92);
+  ctx.font='64px serif'; ctx.fillStyle='#6A9FC5'; ctx.fillText('𝄢',42,82);
   // note
   const freq = NOTE_FREQ[q.note];
-  const y = bassNoteY(freq);
+  const y = bassNoteY(q.note);
   const x = 200;
   ctx.fillStyle='#333';
   ctx.beginPath(); ctx.ellipse(x,y,11,8,-0.2,0,Math.PI*2); ctx.fill();
   ctx.strokeStyle='#333'; ctx.lineWidth=2;
   ctx.beginPath(); ctx.moveTo(x+10,y); ctx.lineTo(x+10,y-35); ctx.stroke();
-  if(freq==='C3'){ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-16,110);ctx.lineTo(x+16,110);ctx.stroke();}
+  if(q.note==='낮은시'){ctx.strokeStyle='#888';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-16,27);ctx.lineTo(x+16,27);ctx.stroke();}
 }
 
 function drawMelodyQ(q) {
