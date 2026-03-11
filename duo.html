@@ -734,16 +734,7 @@ function load() {
     localStorage.setItem('music_duo_lastUser', code);
     return true;
   }
-  // 자동 로그인 시도
-  const lastCode = localStorage.getItem('music_duo_lastUser');
-  if (lastCode) {
-    const users = getAllUsers();
-    if (users[lastCode]) {
-      currentUser = { code: lastCode, name: users[lastCode].name };
-      DATA = users[lastCode].data;
-      return true;
-    }
-  }
+  // 자동 로그인 안 함 - 항상 로그인 화면부터 시작
   DATA = { xp:0, streak:0, lastDay:null, skills:{}, dailyLessons:0, dailyDate:null };
   return false;
 }
