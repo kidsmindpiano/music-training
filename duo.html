@@ -712,6 +712,28 @@ function renderLogin() {
 // ============================================================
 let DATA;
 function load() {
+  // URL 파라미터로 학생 이름 전달 시 해당 학생으로 전환
+  const urlParams = new URLSearchParams(window.location.search);
+  const studentName = urlParams.get('student');
+  if (studentName) {
+    const users = getAllUsers();
+    for (const [code, u] of Object.entries(users)) {
+      if (u.name === studentName) {
+        currentUser = { code, name: u.name };
+        DATA = u.data;
+        localStorage.setItem('music_duo_lastUser', code);
+        return true;
+      }
+    }
+    // 이름이 있지만 등록 안 된 경우 → 자동 등록
+    const code = genCode();
+    users[code] = { name: studentName, data: { xp:0, streak:0, lastDay:null, skills:{}, dailyLessons:0, dailyDate:null } };
+    saveAllUsers(users);
+    currentUser = { code, name: studentName };
+    DATA = users[code].data;
+    localStorage.setItem('music_duo_lastUser', code);
+    return true;
+  }
   // 자동 로그인 시도
   const lastCode = localStorage.getItem('music_duo_lastUser');
   if (lastCode) {
