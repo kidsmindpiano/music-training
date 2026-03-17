@@ -138,7 +138,7 @@ function startSong(i){
   document.getElementById('result').classList.remove('active');
   buildKB();perf=0;gd=0;ms=0;playing=false;
   gNotes=[];let t=0;
-  curSong.notes.forEach(n=>{gNotes.push({note:n.n,start:t,dur:n.d,hit:false,judged:false});t+=n.d;});
+  curSong.notes.forEach(n=>{gNotes.push({note:n.n,start:t+4,dur:n.d,hit:false,judged:false});t+=n.d;});
   const cd=document.getElementById('countdown');cd.classList.remove('hidden');
   let c=3;cd.textContent=c;
   const ci=setInterval(()=>{c--;if(c>0)cd.textContent=c;else{cd.textContent='🎵';setTimeout(()=>{cd.classList.add('hidden');clearInterval(ci);go();},400);}},800);
@@ -179,7 +179,7 @@ function draw(){
   ctx.strokeStyle='rgba(0,0,0,.15)';ctx.lineWidth=2;
   ctx.beginPath();ctx.moveTo(CX,sT-20);ctx.lineTo(CX,sB+20);ctx.stroke();
   // Clef
-  ctx.font='64px serif';ctx.fillStyle='#ccc';ctx.fillText('𝄞',10,sT+gap*3.2);
+  ctx.font='90px serif';ctx.fillStyle='#ccc';ctx.fillText('𝄞',8,sT+gap*3.5);
   
   const totalB=gNotes.length>0?gNotes[gNotes.length-1].start+gNotes[gNotes.length-1].dur:0;
   let allDone=true;
