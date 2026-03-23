@@ -469,138 +469,169 @@ const FLAT_NOTES = [
 ];
 
 const SKILLS = [
-  // === UNIT 1: 음 기초 ===
-  { id:'note1', icon:'🎵', label:'도레미', desc:'도, 레, 미 배우기',
-    lessons: [
-      { type:'mixed', notePool:['도','레','미'], qCount:8 },
-      { type:'mixed', notePool:['도','레','미'], qCount:10 },
-    ]},
-  { id:'note2', icon:'🎶', label:'파솔', desc:'파, 솔 추가',
-    lessons: [
-      { type:'mixed', notePool:['도','레','미','파','솔'], qCount:10 },
-      { type:'mixed', notePool:['도','레','미','파','솔'], qCount:10 },
-    ]},
-  { id:'note3', icon:'🌟', label:'라시', desc:'모든 음 완성!',
-    lessons: [
-      { type:'mixed', notePool:['도','레','미','파','솔','라','시'], qCount:10 },
-      { type:'mixed', notePool:['도','레','미','파','솔','라','시'], qCount:12 },
+  // ===== Unit 1: 검은 건반 =====
+  { id:'black1', icon:'🖤', label:'검은 건반 탐험', desc:'검은 건반 2-3개 그룹 구분',
+    lessons:[
+      { type:'note-name-id', notePool:['검은건반'], qCount:6 },
+      { type:'note-name-id', notePool:['검은건반'], qCount:8 },
     ]},
 
-  // === UNIT 1.5: 낮은음자리표 ===
-  { id:'bass1', icon:'🎻', label:'낮은 도레미', desc:'낮은음자리표 시작!',
-    lessons: [
-      { type:'bass-staff', notePool:['낮은도','낮은레','낮은미'], qCount:8 },
-      { type:'bass-staff', notePool:['낮은도','낮은레','낮은미'], qCount:10 },
+  // ===== Unit 2: 흰 건반 (오른손) =====
+  { id:'white1', icon:'🤚', label:'오른손 도레미', desc:'오른손 1·2·3번 손가락',
+    lessons:[
+      { type:'staff', notePool:['도','레','미'], qCount:8 },
+      { type:'match', notePool:['도','레','미'], qCount:8 },
     ]},
-  { id:'bass2', icon:'🎸', label:'낮은 파솔', desc:'낮은음자리표 파, 솔 추가',
-    lessons: [
-      { type:'bass-staff', notePool:['낮은도','낮은레','낮은미','낮은파','낮은솔'], qCount:10 },
-      { type:'bass-staff', notePool:['낮은도','낮은레','낮은미','낮은파','낮은솔'], qCount:10 },
-    ]},
-  { id:'bass3', icon:'🎺', label:'낮은 라시', desc:'낮은음자리표 완성!',
-    lessons: [
-      { type:'bass-staff', notePool:['낮은도','낮은레','낮은미','낮은파','낮은솔','낮은라','낮은시'], qCount:10 },
-      { type:'bass-staff', notePool:['낮은도','낮은레','낮은미','낮은파','낮은솔','낮은라','낮은시'], qCount:12 },
+  { id:'white2', icon:'🖐️', label:'오른손 파솔', desc:'파, 솔 추가!',
+    lessons:[
+      { type:'staff', notePool:['도','레','미','파','솔'], qCount:8 },
+      { type:'ear', notePool:['도','레','미','파','솔'], qCount:8 },
     ]},
 
-  // === UNIT 2: 음표 이름 & 음악 기호 ===
-  { id:'notename1', icon:'📝', label:'음표 이름', desc:'온음표부터 16분음표까지',
-    lessons: [
-      { type:'note-name', qCount:8 },
-      { type:'note-name', qCount:10 },
-      { type:'note-name-beats', qCount:10 },
+  // ===== Unit 3: 흰 건반 (왼손) =====
+  { id:'white3', icon:'✋', label:'왼손 도시라', desc:'왼손으로 연주해요',
+    lessons:[
+      { type:'bass-staff', notePool:['낮은도','낮은시','낮은라'], qCount:8 },
+      { type:'bass-staff', notePool:['낮은도','낮은시','낮은라'], qCount:10 },
     ]},
-  { id:'accidental1', icon:'♯', label:'샵과 플랫', desc:'#과 ♭ 배우기',
-    lessons: [
-      { type:'accidental-basic', qCount:6 },
-      { type:'accidental-intro', qCount:8 },
-      { type:'accidental-ear', qCount:8 },
-    ]},
-
-  { id:'slur1', icon:'🔗', label:'이음줄·붙임줄', desc:'이어서 연주해요',
-    lessons: [
-      { type:'slur-intro', qCount:8 },
-      { type:'slur-quiz', qCount:10 },
-    ]},
-  { id:'staccato1', icon:'⚡', label:'스타카토', desc:'짧게 끊어서!',
-    lessons: [
-      { type:'staccato-intro', qCount:8 },
-      { type:'staccato-ear', qCount:10 },
+  { id:'white4', icon:'👐', label:'양손 주고받기', desc:'오른손↔왼손 번갈아',
+    lessons:[
+      { type:'staff', notePool:['도','레','미','파','솔'], qCount:6 },
+      { type:'bass-staff', notePool:['낮은도','낮은시','낮은라','낮은솔','낮은파'], qCount:6 },
+      { type:'melody', notePool:['도','레','미','파','솔'], qCount:6 },
     ]},
 
-  // === UNIT 3: 리듬 ===
-  { id:'rhythm1', icon:'🥁', label:'리듬 기초', desc:'음표 종류 배우기',
-    lessons: [
-      { type:'rhythm', qCount:8 },
-      { type:'rhythm', qCount:10 },
+  // ===== Unit 4: 음표와 박자 =====
+  { id:'noteval1', icon:'🎵', label:'4분음표', desc:'4분음표 = 1박',
+    lessons:[
+      { type:'note-name-id', notePool:['note-name'], qCount:6 },
+      { type:'note-beats', notePool:['note-beats'], qCount:8 },
     ]},
-  { id:'rhythm2', icon:'👏', label:'리듬 박수', desc:'리듬을 듣고 따라 쳐요',
-    lessons: [
-      { type:'rhythm-tap', qCount:6 },
-      { type:'rhythm-tap', qCount:8 },
+  { id:'noteval2', icon:'🎶', label:'2분음표·온음표', desc:'2분=2박, 온=4박',
+    lessons:[
+      { type:'note-name-id', notePool:['note-name'], qCount:8 },
+      { type:'note-beats', notePool:['note-beats'], qCount:8 },
+      { type:'rhythm-compare', notePool:['rhythm'], qCount:6 },
     ]},
-  { id:'rhythm3', icon:'📐', label:'음표 길이', desc:'어떤 음표가 더 길까?',
-    lessons: [
-      { type:'rhythm-compare', qCount:8 },
-      { type:'rhythm-compare', qCount:10 },
+  { id:'noteval3', icon:'⏸️', label:'쉼표', desc:'4분·2분·온쉼표',
+    lessons:[
+      { type:'rest-id', notePool:['rest'], qCount:8 },
+      { type:'rest-id', notePool:['rest'], qCount:10 },
     ]},
-
-  { id:'rhythm-quiz', icon:'🧩', label:'리듬 퀴즈', desc:'박자 계산하기',
-    lessons: [
-      { type:'rhythm-quiz', qCount:8 },
-      { type:'rhythm-quiz', qCount:10 },
-    ]},
-
-  // === UNIT 4: 청음 ===
-  { id:'ear1', icon:'👂', label:'청음 입문', desc:'소리로 음 맞추기',
-    lessons: [
-      { type:'mixed', notePool:['도','레','미','파','솔'], qCount:10, earFocus:true },
-      { type:'mixed', notePool:['도','레','미','파','솔','라','시'], qCount:10, earFocus:true },
-    ]},
-  { id:'highlow', icon:'📊', label:'높낮이', desc:'어떤 음이 더 높을까?',
-    lessons: [
-      { type:'high-low', notePool:['도','레','미','파','솔','라','시'], qCount:8 },
-      { type:'high-low', notePool:['도','레','미','파','솔','라','시'], qCount:10 },
-    ]},
-  { id:'interval1', icon:'📏', label:'음정', desc:'두 음 사이의 거리',
-    lessons: [
-      { type:'interval', qCount:8 },
-      { type:'interval', qCount:10 },
+  { id:'beat1', icon:'🥁', label:'4/4박자', desc:'마디와 세로줄',
+    lessons:[
+      { type:'rhythm-id', notePool:['rhythm'], qCount:8 },
+      { type:'rhythm-tap', notePool:['rhythm'], qCount:6 },
     ]},
 
-  // === UNIT 4: 멜로디 ===
-  { id:'melody1', icon:'🎤', label:'멜로디', desc:'빈칸 채우기',
-    lessons: [
+  // ===== Unit 5: 높은음자리표 =====
+  { id:'treble1', icon:'🎼', label:'도레미 읽기', desc:'오선지에서 도·레·미',
+    lessons:[
+      { type:'staff', notePool:['도','레','미'], qCount:8 },
+      { type:'staff', notePool:['도','레','미'], qCount:10 },
+    ]},
+  { id:'treble2', icon:'🌈', label:'파솔 읽기', desc:'파·솔 추가!',
+    lessons:[
+      { type:'staff', notePool:['도','레','미','파','솔'], qCount:10 },
+      { type:'staff', notePool:['도','레','미','파','솔'], qCount:10 },
+    ]},
+  { id:'treble3', icon:'⭐', label:'라시도 읽기', desc:'모든 음 완성!',
+    lessons:[
+      { type:'staff', notePool:['도','레','미','파','솔','라','시','높은도'], qCount:10 },
+      { type:'staff', notePool:['도','레','미','파','솔','라','시','높은도'], qCount:12 },
+    ]},
+
+  // ===== Unit 6: 낮은음자리표 =====
+  { id:'bassr1', icon:'🎻', label:'낮은 도시라', desc:'낮은음자리표 시작!',
+    lessons:[
+      { type:'bass-staff', notePool:['낮은도','낮은시','낮은라'], qCount:8 },
+      { type:'bass-staff', notePool:['낮은도','낮은시','낮은라'], qCount:10 },
+    ]},
+  { id:'bassr2', icon:'🎸', label:'낮은 솔파미', desc:'솔·파·미 추가',
+    lessons:[
+      { type:'bass-staff', notePool:['낮은도','낮은시','낮은라','낮은솔','낮은파','낮은미'], qCount:10 },
+      { type:'bass-staff', notePool:['낮은도','낮은시','낮은라','낮은솔','낮은파','낮은미','낮은레'], qCount:10 },
+    ]},
+
+  // ===== Unit 7: 큰보표 =====
+  { id:'grand1', icon:'📖', label:'큰보표 읽기', desc:'높은+낮은 동시!',
+    lessons:[
+      { type:'staff', notePool:['도','레','미','파','솔','라','시'], qCount:6 },
+      { type:'bass-staff', notePool:['낮은도','낮은레','낮은미','낮은파','낮은솔','낮은라','낮은시'], qCount:6 },
+    ]},
+  { id:'grand2', icon:'🎹', label:'양손 연주', desc:'큰보표 멜로디',
+    lessons:[
       { type:'melody', notePool:['도','레','미','파','솔'], qCount:8 },
-      { type:'melody', notePool:['도','레','미','파','솔','라','시'], qCount:10 },
-    ]},
-  { id:'order1', icon:'🔢', label:'음 순서', desc:'올라가는 음? 내려가는 음?',
-    lessons: [
-      { type:'direction', notePool:['도','레','미','파','솔','라','시'], qCount:8 },
-      { type:'direction', notePool:['도','레','미','파','솔','라','시'], qCount:10 },
+      { type:'melody', notePool:['도','레','미','파','솔','라','시'], qCount:8 },
     ]},
 
-  // === UNIT 5: 음악 지식 ===
-  { id:'dynamics', icon:'🔊', label:'셈여림', desc:'pp p mp mf f ff',
-    lessons: [
-      { type:'dynamics', qCount:8 },
-      { type:'dynamics', qCount:10 },
+  // ===== Unit 8: 음정 =====
+  { id:'int1', icon:'📏', label:'음정 1~3도', desc:'1도·2도·3도 간격',
+    lessons:[
+      { type:'interval', notePool:['도','레','미','파','솔'], qCount:8, maxInterval:3 },
+      { type:'interval', notePool:['도','레','미','파','솔'], qCount:10, maxInterval:3 },
     ]},
-  { id:'tempo1', icon:'⏱️', label:'빠르기말', desc:'Allegro? Adagio?',
-    lessons: [
-      { type:'tempo', qCount:8 },
-      { type:'tempo', qCount:10 },
+  { id:'int2', icon:'📐', label:'음정 4~5도', desc:'4도·5도 간격',
+    lessons:[
+      { type:'interval', notePool:['도','레','미','파','솔','라','시'], qCount:10, maxInterval:5 },
+      { type:'interval', notePool:['도','레','미','파','솔','라','시'], qCount:10, maxInterval:5 },
+    ]},
+  { id:'int3', icon:'🎯', label:'음정 6~8도', desc:'6도·7도·8도',
+    lessons:[
+      { type:'interval', notePool:['도','레','미','파','솔','라','시','높은도'], qCount:10 },
+      { type:'ear', notePool:['도','레','미','파','솔','라','시'], qCount:8, earFocus:true },
     ]},
 
-  // === UNIT 6: 종합 ===
-  { id:'note4', icon:'🎹', label:'영어 계이름', desc:'C D E F G A B',
-    lessons: [
-      { type:'mixed', notePool:['도','레','미','파','솔','라','시'], qCount:10, engMode:true },
-      { type:'mixed', notePool:['도','레','미','파','솔','라','시'], qCount:12, engMode:true },
+  // ===== Unit 9: 셈여림 =====
+  { id:'dyn1', icon:'🔊', label:'셈여림표', desc:'p, mp, mf, f',
+    lessons:[
+      { type:'dynamics', notePool:['dynamics'], qCount:8 },
+      { type:'dynamics', notePool:['dynamics'], qCount:10 },
+    ]},
+
+  // ===== Unit 10: 아티큘레이션 =====
+  { id:'art1', icon:'🔗', label:'이음줄·붙임줄', desc:'레가토, 붙임줄 구분',
+    lessons:[
+      { type:'slur-visual', notePool:['slur'], qCount:8 },
+      { type:'slur-visual', notePool:['slur'], qCount:10 },
+    ]},
+  { id:'art2', icon:'⚡', label:'스타카토', desc:'짧게 끊어서!',
+    lessons:[
+      { type:'staccato-ear', notePool:['staccato'], qCount:8 },
+      { type:'staccato-ear', notePool:['staccato'], qCount:10 },
+    ]},
+
+  // ===== Unit 11: 리듬 심화 =====
+  { id:'rhy1', icon:'♪', label:'8분음표', desc:'8분음표 = 반 박',
+    lessons:[
+      { type:'note-name-id', notePool:['note-name'], qCount:8 },
+      { type:'rhythm-tap', notePool:['rhythm'], qCount:8 },
+    ]},
+  { id:'rhy2', icon:'♩.', label:'점2분음표', desc:'점2분음표 = 3박',
+    lessons:[
+      { type:'note-beats', notePool:['note-beats'], qCount:8 },
+      { type:'rhythm-compare', notePool:['rhythm'], qCount:8 },
+    ]},
+
+  // ===== Unit 12: 기호 =====
+  { id:'sign1', icon:'♯', label:'샵과 플랫', desc:'올림·내림 배우기',
+    lessons:[
+      { type:'accidental-read', notePool:['accidental'], qCount:8 },
+      { type:'accidental-ear', notePool:['accidental'], qCount:8 },
+    ]},
+
+  // ===== Unit 13: 종합 =====
+  { id:'eng1', icon:'🔤', label:'영어 계이름', desc:'C D E F G A B',
+    lessons:[
+      { type:'eng', notePool:['도','레','미','파','솔','라','시'], qCount:10 },
+      { type:'eng', notePool:['도','레','미','파','솔','라','시'], qCount:12 },
     ]},
   { id:'master', icon:'👑', label:'마스터', desc:'모든 실력 종합!',
-    lessons: [
-      { type:'mixed', notePool:['도','레','미','파','솔','라','시'], qCount:15, earFocus:true, engMode:true },
+    lessons:[
+      { type:'staff', notePool:['도','레','미','파','솔','라','시','높은도'], qCount:5 },
+      { type:'bass-staff', notePool:['낮은도','낮은레','낮은미','낮은파','낮은솔','낮은라','낮은시'], qCount:5 },
+      { type:'ear', notePool:['도','레','미','파','솔','라','시'], qCount:5, earFocus:true },
+      { type:'rhythm-id', notePool:['rhythm'], qCount:5 },
     ]},
 ];
 
