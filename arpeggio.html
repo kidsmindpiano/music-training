@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CCM 아르페지오 기본 과정</title>
+<script src="https://cdn.jsdelivr.net/npm/abcjs@6.4.4/dist/abcjs-basic-min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #fff;
+    color: #222;
+    padding: 40px 50px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  h1 {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 900;
+    margin-bottom: 6px;
+    color: #1a1a2e;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 36px;
+  }
+  .section-title {
+    font-size: 20px;
+    font-weight: 900;
+    color: #1a1a2e;
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 3px solid #1a1a2e;
+  }
+  .section-title .emoji { margin-right: 8px; }
+  .step {
+    margin-bottom: 28px;
+    border: 2px solid #e8e8e8;
+    border-radius: 14px;
+    overflow: hidden;
+    page-break-inside: avoid;
+  }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    font-weight: 700;
+    font-size: 17px;
+    color: #fff;
+  }
+  .step-num {
+    background: rgba(255,255,255,0.25);
+    border-radius: 50%;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 16px;
+    flex-shrink: 0;
+  }
+  .bg-blue .step-header { background: #4a6cf7; }
+  .bg-purple .step-header { background: #6c5ce7; }
+  .bg-orange .step-header { background: #e17055; }
+  .bg-green .step-header { background: #00b894; }
+  .bg-yellow .step-header { background: #f39c12; color: #fff; }
+  .bg-pink .step-header { background: #e84393; }
+  .bg-teal .step-header { background: #00838f; }
+  .bg-red .step-header { background: #c0392b; }
+  .bg-indigo .step-header { background: #3f51b5; }
+  .bg-deep .step-header { background: #2c3e50; }
+  .step-body {
+    padding: 16px 20px 8px;
+  }
+  .desc {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 8px;
+    line-height: 1.7;
+  }
+  .desc strong { color: #222; }
+  .notation-container {
+    margin: 0 -8px;
+  }
+  .notation-container svg { width: 100% !important; }
+  .tip {
+    background: #f0f7ff;
+    border-left: 4px solid #4a6cf7;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #444;
+    margin: 8px 0 12px;
+    border-radius: 0 8px 8px 0;
+    line-height: 1.5;
+  }
+  .tip::before { content: "💡 "; }
+  .tip.warning {
+    background: #fff8e1;
+    border-left-color: #f39c12;
+  }
+  .tip.warning::before { content: "⚡ "; }
+  .ccm-tag {
+    display: inline-block;
+    background: #fff3e0;
+    border: 1px solid #ffcc80;
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 12px;
+    color: #e65100;
+    margin: 4px 4px 8px 0;
+    font-weight: 700;
+  }
+  .vs-label {
+    display: inline-block;
+    background: #e8eaf6;
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #3f51b5;
+    margin: 6px 0 4px;
+  }
+  .footer {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid #eee;
+    font-size: 13px;
+    color: #999;
+  }
+  .footer strong { color: #666; }
+</style>
+</head>
+<body>
+
+<h1>🎹 CCM 아르페지오 기본 과정</h1>
+<p class="subtitle">김순례님을 위한 단계별 아르페지오 반주 커리큘럼 · 키즈마인드피아노</p>
+
+<!-- ======== PART 1: 기본 ======== -->
+<div class="section-title"><span class="emoji">📘</span> PART 1 — 아르페지오 기초</div>
+
+<!-- Step 1 -->
+<div class="step bg-blue">
+  <div class="step-header">
+    <div class="step-num">1</div>
+    기본 아르페지오 — 도미솔 펼침 (C 메이저)
+  </div>
+  <div class="step-body">
+    <p class="desc">왼손으로 <strong>도-미-솔</strong>을 한 음씩 차례로 올라갔다 내려오는 가장 기본 패턴입니다.</p>
+    <div class="notation-container" id="n1"></div>
+    <div class="tip">왼손 5-3-2-1 손가락으로, 한 음 한 음 고르게 치는 연습부터!</div>
+    <span class="ccm-tag">🎵 예수 사랑하심은</span>
+    <span class="ccm-tag">🎵 감사해</span>
+  </div>
+</div>
+
+<!-- Step 2 -->
+<div class="step bg-purple">
+  <div class="step-header">
+    <div class="step-num">2</div>
+    기본 3코드 진행 — C, F, G
+  </div>
+  <div class="step-body">
+    <p class="desc"><strong>C(도미솔) → F(파라도) → G(솔시레) → C</strong> — CCM의 80%는 이 3코드로 시작!</p>
+    <div class="notation-container" id="n2"></div>
+    <div class="tip">코드가 바뀔 때 끊기지 않도록, 다음 코드 첫 음을 미리 준비하세요.</div>
+    <span class="ccm-tag">🎵 주 하나님 지으신 모든 세계</span>
+  </div>
+</div>
+
+<!-- Step 3 -->
+<div class="step bg-orange">
+  <div class="step-header">
+    <div class="step-num">3</div>
+    마이너 코드 아르페지오 — Am, Dm, Em
+  </div>
+  <div class="step-body">
+    <p class="desc"><strong>Am(라도미), Dm(레파라), Em(미솔시)</strong> — 가운데 음이 반음 내려가 부드럽고 애절한 소리</p>
+    <div class="notation-container" id="n3"></div>
+    <span class="ccm-tag">🎵 나 같은 죄인 살리신</span>
+    <span class="ccm-tag">🎵 주 품에 품으소서</span>
+  </div>
+</div>
+
+<!-- Step 4 -->
+<div class="step bg-green">
+  <div class="step-header">
+    <div class="step-num">4</div>
+    옥타브 아르페지오 — 넓은 음역 (CCM 핵심!)
+  </div>
+  <div class="step-body">
+    <p class="desc">왼손을 <strong>한 옥타브 넓게</strong> 펼침: <strong>도(낮은)-솔-도(높은)-미</strong><br>CCM 반주에서 가장 많이 쓰는 형태입니다!</p>
+    <div class="notation-container" id="n4"></div>
+    <div class="tip">5번(새끼)→3번→1번(엄지)→2번 손가락. 손이 자연스럽게 넓어지는 느낌으로!</div>
+    <span class="ccm-tag">🎵 은혜 아니면</span>
+    <span class="ccm-tag">🎵 주님은 좋은 분</span>
+  </div>
+</div>
+
+<!-- ======== PART 2: 리듬 변형 ======== -->
+<div class="section-title"><span class="emoji">🥁</span> PART 2 — 리듬 변형 아르페지오</div>
+
+<!-- Step 5 -->
+<div class="step bg-yellow">
+  <div class="step-header">
+    <div class="step-num">5</div>
+    기본 8비트 아르페지오
+  </div>
+  <div class="step-body">
+    <p class="desc">같은 음도 <strong>8분음표 리듬</strong>으로 치면 훨씬 생동감! 빠른 찬양의 기본 패턴.</p>
+    <div class="notation-container" id="n5"></div>
+    <div class="tip">메트로놈 ♩=70부터 → 익숙해지면 ♩=100까지</div>
+    <span class="ccm-tag">🎵 살아 계신 주</span>
+  </div>
+</div>
+
+<!-- Step 6: 리듬 변형 - 싱코페이션 -->
+<div class="step bg-pink">
+  <div class="step-header">
+    <div class="step-num">6</div>
+    싱코페이션 아르페지오 — 엇박 강조
+  </div>
+  <div class="step-body">
+    <p class="desc"><strong>약박에 악센트</strong>를 넣어 리듬감을 살리는 패턴.<br>같은 C코드인데 느낌이 완전히 달라집니다!</p>
+    <div class="vs-label">▼ 기본 (정박)</div>
+    <div class="notation-container" id="n6a"></div>
+    <div class="vs-label">▼ 싱코페이션 (엇박)</div>
+    <div class="notation-container" id="n6b"></div>
+    <div class="tip warning">2번째, 4번째 8분음표에 힘을 살짝 더! "쿵-짝-쿵-짝" 느낌으로.</div>
+    <span class="ccm-tag">🎵 좋으신 하나님</span>
+    <span class="ccm-tag">🎵 주의 친절한 팔에</span>
+  </div>
+</div>
+
+<!-- Step 7: 리듬 변형 - 점음표 -->
+<div class="step bg-teal">
+  <div class="step-header">
+    <div class="step-num">7</div>
+    점음표 아르페지오 — 느린 찬양의 깊이
+  </div>
+  <div class="step-body">
+    <p class="desc"><strong>점4분음표 + 8분음표</strong> 조합 — 물 흐르듯 여유로운 느낌.<br>느린 CCM에서 감동을 더해주는 패턴입니다.</p>
+    <div class="notation-container" id="n7"></div>
+    <div class="tip">긴 음(점4분)에서 충분히 울린 후, 짧은 음(8분)으로 자연스럽게 이어가세요.</div>
+    <span class="ccm-tag">🎵 내 주를 가까이 하게 함은</span>
+    <span class="ccm-tag">🎵 주 품에 품으소서</span>
+  </div>
+</div>
+
+<!-- Step 8: 리듬 변형 - 타이 넘김 -->
+<div class="step bg-red">
+  <div class="step-header">
+    <div class="step-num">8</div>
+    타이(Tie) 넘김 패턴 — 부드러운 연결
+  </div>
+  <div class="step-body">
+    <p class="desc">마디 끝 음을 다음 마디 첫 음과 <strong>타이로 연결</strong>하면<br>박자가 걸쳐지면서 부드럽고 자연스러운 흐름이 만들어집니다.</p>
+    <div class="vs-label">▼ 타이 없이</div>
+    <div class="notation-container" id="n8a"></div>
+    <div class="vs-label">▼ 타이 넘김 적용</div>
+    <div class="notation-container" id="n8b"></div>
+    <div class="tip">마디 경계에서 "끊기는 느낌"이 사라져요. CCM 느린 곡에서 필수!</div>
+    <span class="ccm-tag">🎵 여호와는 나의 목자시니</span>
+    <span class="ccm-tag">🎵 하나님의 은혜</span>
+  </div>
+</div>
+
+<!-- Step 9: 리듬 변형 - 16비트 -->
+<div class="step bg-indigo">
+  <div class="step-header">
+    <div class="step-num">9</div>
+    16비트 아르페지오 — 경쾌한 찬양
+  </div>
+  <div class="step-body">
+    <p class="desc"><strong>16분음표</strong>로 잘게 쪼개면 경쾌하고 에너지 넘치는 반주!<br>빠른 찬양, 복음성가 스타일에 딱 맞습니다.</p>
+    <div class="notation-container" id="n9"></div>
+    <div class="tip warning">속도 욕심 NO! ♩=60부터 정확하게 → 서서히 올리세요.</div>
+    <span class="ccm-tag">🎵 내 영혼의 그윽히 깊은 데서</span>
+    <span class="ccm-tag">🎵 선한 목자 되신 우리 주</span>
+  </div>
+</div>
+
+<!-- ======== PART 3: 6/8 박자 ======== -->
+<div class="section-title"><span class="emoji">🎶</span> PART 3 — 6/8박자 반주법</div>
+
+<!-- Step 10 -->
+<div class="step bg-deep">
+  <div class="step-header">
+    <div class="step-num">10</div>
+    6/8박자 기본 아르페지오 — 물결치는 느낌
+  </div>
+  <div class="step-body">
+    <p class="desc">6/8박자는 <strong>"하나둘셋 하나둘셋"</strong> 두 묶음으로 느끼는 박자.<br>아르페지오와 궁합이 최고! 찬양이 <strong>물 위를 흘러가는 듯한</strong> 느낌을 줍니다.</p>
+    <div class="notation-container" id="n10"></div>
+    <div class="tip">3개씩 묶어서 느끼세요: "도-미-솔 / 도-미-솔" (둥실~둥실~)</div>
+    <span class="ccm-tag">🎵 Amazing Grace (나 같은 죄인 살리신)</span>
+  </div>
+</div>
+
+<!-- Step 11 -->
+<div class="step bg-blue">
+  <div class="step-header">
+    <div class="step-num">11</div>
+    6/8박자 옥타브 아르페지오 — 풍성한 울림
+  </div>
+  <div class="step-body">
+    <p class="desc">옥타브로 넓힌 6/8 아르페지오 — <strong>도(낮)-솔-도(높) / 미-솔-도(높)</strong><br>예배 반주에서 가장 아름다운 소리를 내는 패턴입니다.</p>
+    <div class="notation-container" id="n11"></div>
+    <div class="tip">페달을 코드마다 한 번씩 밟아주면 더욱 풍성해져요!</div>
+    <span class="ccm-tag">🎵 주 하나님 지으신 모든 세계</span>
+    <span class="ccm-tag">🎵 거룩 거룩 거룩</span>
+  </div>
+</div>
+
+<!-- Step 12 -->
+<div class="step bg-purple">
+  <div class="step-header">
+    <div class="step-num">12</div>
+    6/8박자 리듬 변형 — 베이스+아르페지오
+  </div>
+  <div class="step-body">
+    <p class="desc"><strong>첫 박에 베이스 음을 깊게</strong> 치고, 나머지를 아르페지오로 채우는 패턴.<br>왼손 베이스가 안정감을, 오른쪽 아르페지오가 흐름을 만듭니다.</p>
+    <div class="vs-label">▼ 베이스 + 아르페지오 분리</div>
+    <div class="notation-container" id="n12"></div>
+    <div class="tip">왼손 베이스(1,4번째 8분)는 강하게, 나머지는 부드럽게!</div>
+    <span class="ccm-tag">🎵 은혜 아니면</span>
+    <span class="ccm-tag">🎵 내 주를 가까이 하게 함은</span>
+  </div>
+</div>
+
+<!-- Step 13 -->
+<div class="step bg-green">
+  <div class="step-header">
+    <div class="step-num">13</div>
+    6/8박자 종합 실전 — CCM 한 곡 완성
+  </div>
+  <div class="step-body">
+    <p class="desc"><strong>C → Am → F → G</strong> 진행을 6/8박자 아르페지오로 연결해<br>한 곡 전체를 아름답게 반주합니다.</p>
+    <div class="notation-container" id="n13"></div>
+    <div class="tip">이 패턴 하나면 6/8박자 CCM 대부분 반주 가능! 🎉</div>
+    <span class="ccm-tag">🎵 십자가 그 사랑</span>
+    <span class="ccm-tag">🎵 하나님의 은혜</span>
+    <span class="ccm-tag">🎵 주 안에서</span>
+  </div>
+</div>
+
+<div class="footer">
+  <strong>키즈마인드피아노</strong> · 김순례님 CCM 코드반주 커리큘럼<br>
+  교재: 조희순의 「반주의 비밀」 1~4권 기반
+</div>
+
+<script>
+const opts = {
+  staffwidth: 750,
+  scale: 1.1,
+  paddingtop: 10,
+  paddingbottom: 0,
+  paddingleft: 10,
+  paddingright: 10,
+  responsive: 'resize',
+  add_classes: true
+};
+
+// Step 1: Basic C arpeggio
+ABCJS.renderAbc("n1", `X:1
+M:4/4
+L:1/8
+K:C clef=bass
+"C"C,E,G,C CG,E,C, | "C"C,E,G,C CG,E,C, |]
+`, opts);
+
+// Step 2: C-F-G-C
+ABCJS.renderAbc("n2", `X:1
+M:4/4
+L:1/8
+K:C clef=bass
+"C"C,E,G,C CG,E,C, | "F"F,,A,,C,F, C,A,,F,,z | "G"G,,B,,D,G, D,B,,G,,z | "C"C,E,G,C CG,E,C, |]
+`, opts);
+
+// Step 3: Am, Dm, Em
+ABCJS.renderAbc("n3", `X:1
+M:4/4
+L:1/8
+K:C clef=bass
+"Am"A,,C,E,A, E,C,A,,z | "Dm"D,F,A,d A,F,D,z | "Em"E,G,B,e B,G,E,z | "Am"A,,C,E,A, E,C,A,,z |]
+`, opts);
+
+// Step 4: Octave arpeggio
+ABCJS.renderAbc("n4", `X:1
+M:4/4
+L:1/8
+K:C clef=bass
+"C"C,G,CE CG,C,z | "Am"A,,E,A,C A,E,A,,z | "F"F,,C,FA, FC,F,,z | "G"G,,D,GB, DG,G,,z |]
+`, opts);
+
+// Step 5: 8-beat
+ABCJS.renderAbc("n5", `X:1
+M:4/4
+L:1/8
+K:C clef=bass
+"C"C,G,CG, CG,CE | "Am"A,,E,A,E, A,E,A,C | "F"F,,C,F,C, F,C,F,A, | "G"G,,D,G,D, G,D,G,B, |]
+`, opts);
+
+// Step 6a: Basic (straight)
+ABCJS.renderAbc("n6a", `X:1
+M:4/4
+L:1/8
+K:C clef=bass
+"C"C,G,CE CG,CE |]
+`, opts);
+
+// Step 6b: Syncopation
+ABCJS.renderAbc("n6b", `X:1
+M:4/4
+L:1/8
+K:C clef=bass
+"C"C,G, C2 E,C G,E, |]
+`, opts);
+
+// Step 7: Dotted rhythm
+ABCJS.renderAbc("n7", `X:1
+M:4/4
+L:1/8
+K:C clef=bass
+"C"C,3E, G,3C | "Am"A,,3C, E,3A, | "F"F,,3A,, C,3F, | "G"G,,3B,, D,3G, |]
+`, opts);
+
+// Step 8a: No tie
+ABCJS.renderAbc("n8a", `X:1
+M:4/4
+L:1/8
+K:C clef=bass
+"C"C,G,CE CG,CE | "Am"A,,E,A,C A,E,A,C |]
+`, opts);
+
+// Step 8b: With tie
+ABCJS.renderAbc("n8b", `X:1
+M:4/4
+L:1/8
+K:C clef=bass
+"C"C,G,CE CG,C-C | "Am"A,,E,A,C A,E,A,-A, |]
+`, opts);
+
+// Step 9: 16th note
+ABCJS.renderAbc("n9", `X:1
+M:4/4
+L:1/16
+K:C clef=bass
+"C"C,E,G,C E,G,CE CG,CE G,CE,G, | "Am"A,,C,E,A, C,E,A,C E,A,CE A,C,E,A, |]
+`, opts);
+
+// Step 10: 6/8 basic
+ABCJS.renderAbc("n10", `X:1
+M:6/8
+L:1/8
+K:C clef=bass
+"C"C,E,G, C,E,G, | "Am"A,,C,E, A,,C,E, | "F"F,,A,,C, F,,A,,C, | "G"G,,B,,D, G,,B,,D, |]
+`, opts);
+
+// Step 11: 6/8 octave
+ABCJS.renderAbc("n11", `X:1
+M:6/8
+L:1/8
+K:C clef=bass
+"C"C,G,C EG,C | "Am"A,,E,A, CE,A, | "F"F,,C,F, A,C,F, | "G"G,,D,G, B,D,G, |]
+`, opts);
+
+// Step 12: 6/8 bass + arpeggio
+ABCJS.renderAbc("n12", `X:1
+M:6/8
+L:1/8
+K:C clef=bass
+"C"C,2E, G,CE | "Am"A,,2C, E,A,C | "F"F,,2A,, C,F,A, | "G"G,,2B,, D,G,B, |]
+`, opts);
+
+// Step 13: 6/8 full progression
+ABCJS.renderAbc("n13", `X:1
+M:6/8
+L:1/8
+K:C clef=bass
+"C"C,G,C EG,C | "Am"A,,E,A, CE,A, | "F"F,,C,F, A,C,F, | "G"G,,D,G, B,D,G, |
+"C"C,G,C EG,C | "Am"A,,E,A, CE,A, | "F"F,,C,F, A,C,F, | "G"G,,2B,, D,G,z |]
+`, opts);
+</script>
+
+</body>
+</html>
