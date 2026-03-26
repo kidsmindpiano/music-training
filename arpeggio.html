@@ -332,6 +332,24 @@
   </div>
 </div>
 
+<div class="step bg-green">
+  <div class="step-header">
+    <div class="step-num">17</div>
+    리듬 믹스 — 정박 + 점4분 조합
+  </div>
+  <div class="step-body">
+    <p class="desc">15번(정박 4분)과 16번(점4분+8분)을 <strong>한 곡 안에서 섞어서</strong> 사용!<br>절은 정박으로 안정감 있게, 후렴은 점4분 리듬으로 흐름을 살려보세요.</p>
+    <div class="vs-label">▼ 절: 정박 4분 (안정감)</div>
+    <div class="notation-container" id="n_both6a"></div>
+    <div class="vs-label">▼ 후렴: 점4분+8분 믹스 (흐름감)</div>
+    <div class="notation-container" id="n_both6b"></div>
+    <div class="tip">같은 코드인데 리듬만 바꿔도 절↔후렴 분위기가 확 달라져요! 🎉</div>
+    <span class="ccm-tag">🎵 하나님의 은혜</span>
+    <span class="ccm-tag">🎵 십자가 그 사랑</span>
+    <span class="ccm-tag">🎵 여호와는 나의 목자시니</span>
+  </div>
+</div>
+
 <div class="footer">
   <strong>키즈마인드피아노</strong> · 김순례님 CCM 코드반주 커리큘럼<br>
   교재: 조희순의 「반주의 비밀」 1~4권 기반
@@ -532,6 +550,30 @@ V:LH clef=bass
 
 // 16: 점4분+8분 리듬 코드
 ABCJS.renderAbc("n_both5", `X:1
+M:4/4
+L:1/8
+K:C
+%%staves {RH LH}
+V:RH clef=treble
+V:LH clef=bass
+[V:RH] "C"[EGc]3[EGc] [EGc]3[EGc] | "Am"[CEA]3[CEA] [CEA]3[CEA] | "F"[FAc]3[FAc] [FAc]3[FAc] | "G"[GBd]3[GBd] [GBd]3[GBd] |]
+[V:LH] C,3C, C,3C, | A,,3A,, A,,3A,, | F,,3F,, F,,3F,, | G,,3G,, G,,3G,, |]
+`, gopts);
+
+// 17a: 절 — 정박 4분
+ABCJS.renderAbc("n_both6a", `X:1
+M:4/4
+L:1/4
+K:C
+%%staves {RH LH}
+V:RH clef=treble
+V:LH clef=bass
+[V:RH] "C"[EGc] [EGc] [EGc] [EGc] | "Am"[CEA] [CEA] [CEA] [CEA] |]
+[V:LH] [C,,C,] [C,,C,] [C,,C,] [C,,C,] | [A,,,A,,] [A,,,A,,] [A,,,A,,] [A,,,A,,] |]
+`, gopts);
+
+// 17b: 후렴 — 점4분+8분 믹스
+ABCJS.renderAbc("n_both6b", `X:1
 M:4/4
 L:1/8
 K:C
