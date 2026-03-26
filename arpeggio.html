@@ -16,110 +16,60 @@
     max-width: 900px;
     margin: 0 auto;
   }
-  h1 {
-    text-align: center;
-    font-size: 28px;
-    font-weight: 900;
-    margin-bottom: 6px;
-    color: #1a1a2e;
-  }
-  .subtitle {
-    text-align: center;
-    font-size: 14px;
-    color: #666;
-    margin-bottom: 36px;
-  }
+  h1 { text-align: center; font-size: 28px; font-weight: 900; margin-bottom: 6px; color: #1a1a2e; }
+  .subtitle { text-align: center; font-size: 14px; color: #666; margin-bottom: 36px; }
   .section-title {
-    font-size: 20px;
-    font-weight: 900;
-    color: #1a1a2e;
-    margin: 40px 0 16px;
-    padding-bottom: 8px;
-    border-bottom: 3px solid #1a1a2e;
+    font-size: 20px; font-weight: 900; color: #1a1a2e;
+    margin: 40px 0 16px; padding-bottom: 8px; border-bottom: 3px solid #1a1a2e;
   }
   .section-title .emoji { margin-right: 8px; }
   .step {
-    margin-bottom: 28px;
-    border: 2px solid #e8e8e8;
-    border-radius: 14px;
-    overflow: hidden;
-    page-break-inside: avoid;
+    margin-bottom: 28px; border: 2px solid #e8e8e8;
+    border-radius: 14px; overflow: hidden; page-break-inside: avoid;
   }
   .step-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 20px;
-    font-weight: 700;
-    font-size: 17px;
-    color: #fff;
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 20px; font-weight: 700; font-size: 17px; color: #fff;
   }
   .step-num {
-    background: rgba(255,255,255,0.25);
-    border-radius: 50%;
-    width: 32px; height: 32px;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 16px;
-    flex-shrink: 0;
+    background: rgba(255,255,255,0.25); border-radius: 50%;
+    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 16px; flex-shrink: 0;
   }
   .bg-blue .step-header { background: #4a6cf7; }
   .bg-purple .step-header { background: #6c5ce7; }
   .bg-green .step-header { background: #00b894; }
   .bg-deep .step-header { background: #2c3e50; }
   .bg-orange .step-header { background: #e17055; }
-  .step-body {
-    padding: 16px 20px 8px;
-  }
-  .desc {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 8px;
-    line-height: 1.7;
-  }
+  .bg-red .step-header { background: #c0392b; }
+  .bg-teal .step-header { background: #00838f; }
+  .bg-pink .step-header { background: #e84393; }
+  .bg-indigo .step-header { background: #3f51b5; }
+  .step-body { padding: 16px 20px 8px; }
+  .desc { font-size: 14px; color: #555; margin-bottom: 8px; line-height: 1.7; }
   .desc strong { color: #222; }
-  .notation-container {
-    margin: 0 -8px;
-  }
+  .notation-container { margin: 0 -8px; }
   .notation-container svg { width: 100% !important; }
   .tip {
-    background: #f0f7ff;
-    border-left: 4px solid #4a6cf7;
-    padding: 10px 14px;
-    font-size: 13px;
-    color: #444;
-    margin: 8px 0 12px;
-    border-radius: 0 8px 8px 0;
-    line-height: 1.5;
+    background: #f0f7ff; border-left: 4px solid #4a6cf7;
+    padding: 10px 14px; font-size: 13px; color: #444;
+    margin: 8px 0 12px; border-radius: 0 8px 8px 0; line-height: 1.5;
   }
   .tip::before { content: "💡 "; }
+  .tip.warning { background: #fff8e1; border-left-color: #f39c12; }
+  .tip.warning::before { content: "⚡ "; }
   .vs-label {
-    display: inline-block;
-    background: #e8eaf6;
-    border-radius: 6px;
-    padding: 2px 10px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #3f51b5;
-    margin: 6px 0 4px;
+    display: inline-block; background: #e8eaf6; border-radius: 6px;
+    padding: 2px 10px; font-size: 12px; font-weight: 700; color: #3f51b5; margin: 6px 0 4px;
   }
   .ccm-tag {
-    display: inline-block;
-    background: #fff3e0;
-    border: 1px solid #ffcc80;
-    border-radius: 20px;
-    padding: 3px 12px;
-    font-size: 12px;
-    color: #e65100;
-    margin: 4px 4px 8px 0;
-    font-weight: 700;
+    display: inline-block; background: #fff3e0; border: 1px solid #ffcc80;
+    border-radius: 20px; padding: 3px 12px; font-size: 12px;
+    color: #e65100; margin: 4px 4px 8px 0; font-weight: 700;
   }
   .footer {
-    text-align: center;
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 2px solid #eee;
-    font-size: 13px;
-    color: #999;
+    text-align: center; margin-top: 40px; padding-top: 20px;
+    border-top: 2px solid #eee; font-size: 13px; color: #999;
   }
   .footer strong { color: #666; }
 </style>
@@ -132,7 +82,6 @@
 <!-- ======== PART 1: 기본 ======== -->
 <div class="section-title"><span class="emoji">📘</span> PART 1 — 아르페지오 기초</div>
 
-<!-- Step 1 -->
 <div class="step bg-blue">
   <div class="step-header">
     <div class="step-num">1</div>
@@ -147,13 +96,116 @@
   </div>
 </div>
 
-<!-- ======== PART 2: 6/8 박자 ======== -->
-<div class="section-title"><span class="emoji">🎶</span> PART 2 — 6/8박자 반주법</div>
+<!-- ======== PART 2: 베이스 경과음 ======== -->
+<div class="section-title"><span class="emoji">🎸</span> PART 2 — 베이스 경과음</div>
 
-<!-- Step 2 -->
-<div class="step bg-deep">
+<div class="step bg-red">
   <div class="step-header">
     <div class="step-num">2</div>
+    베이스 순차 하행 — C → C/B → Am
+  </div>
+  <div class="step-body">
+    <p class="desc">코드가 바뀔 때 베이스를 <strong>한 음씩 계단처럼 내려가며</strong> 연결합니다.<br><strong>도→시→라</strong> — CCM에서 가장 많이 쓰이는 베이스 라인!</p>
+    <div class="vs-label">▼ 경과음 없이 (뚝뚝 끊김)</div>
+    <div class="notation-container" id="n_pass1a"></div>
+    <div class="vs-label">▼ 베이스 경과음 적용 (부드러운 연결)</div>
+    <div class="notation-container" id="n_pass1b"></div>
+    <div class="tip">C→B→A 베이스가 계단처럼 내려가면서 자연스럽게 Am으로 연결돼요!</div>
+    <span class="ccm-tag">🎵 주님은 좋은 분</span>
+    <span class="ccm-tag">🎵 감사해</span>
+  </div>
+</div>
+
+<div class="step bg-teal">
+  <div class="step-header">
+    <div class="step-num">3</div>
+    베이스 순차 상행 — Am → Am/B → C
+  </div>
+  <div class="step-body">
+    <p class="desc">반대로 베이스를 <strong>한 음씩 올라가며</strong> 연결하는 패턴.<br><strong>라→시→도</strong> — 밝아지는 느낌, 클라이맥스로 갈 때 효과적!</p>
+    <div class="notation-container" id="n_pass2"></div>
+    <div class="tip">마이너에서 메이저로 갈 때 쓰면 "어둠→빛" 분위기 전환이 자연스러워요.</div>
+    <span class="ccm-tag">🎵 나 같은 죄인 살리신</span>
+    <span class="ccm-tag">🎵 십자가 그 사랑</span>
+  </div>
+</div>
+
+<div class="step bg-pink">
+  <div class="step-header">
+    <div class="step-num">4</div>
+    베이스 라인 종합 — C → C/B → Am → Am/G → F → G → C
+  </div>
+  <div class="step-body">
+    <p class="desc">CCM에서 자주 쓰는 <strong>하행 베이스 라인 전체</strong>를 연결합니다.<br>베이스가 <strong>도→시→라→솔→파</strong>로 아름답게 흘러내려요.</p>
+    <div class="notation-container" id="n_pass3"></div>
+    <div class="tip warning">이 베이스 라인 하나만 익히면 수십 곡에 활용 가능! 꼭 외우세요!</div>
+    <span class="ccm-tag">🎵 은혜 아니면</span>
+    <span class="ccm-tag">🎵 주 품에 품으소서</span>
+    <span class="ccm-tag">🎵 여호와는 나의 목자시니</span>
+  </div>
+</div>
+
+<!-- ======== PART 3: 리듬 쪼개기 ======== -->
+<div class="section-title"><span class="emoji">🥁</span> PART 3 — 리듬 쪼개기</div>
+
+<div class="step bg-indigo">
+  <div class="step-header">
+    <div class="step-num">5</div>
+    4분음표 → 8분음표 쪼개기
+  </div>
+  <div class="step-body">
+    <p class="desc">같은 코드를 <strong>4분음표에서 8분음표로 쪼개면</strong> 곡이 살아납니다!<br>느린 부분은 4분, 후렴이나 클라이맥스에서 8분으로 전환하세요.</p>
+    <div class="vs-label">▼ 4분음표 (느리게, 차분하게)</div>
+    <div class="notation-container" id="n_rhythm1a"></div>
+    <div class="vs-label">▼ 8분음표로 쪼개기 (생동감!)</div>
+    <div class="notation-container" id="n_rhythm1b"></div>
+    <div class="tip">1절은 4분, 후렴은 8분 — 이렇게만 해도 반주가 입체적으로 변해요!</div>
+    <span class="ccm-tag">🎵 좋으신 하나님</span>
+  </div>
+</div>
+
+<div class="step bg-orange">
+  <div class="step-header">
+    <div class="step-num">6</div>
+    8분음표 → 16분음표 쪼개기
+  </div>
+  <div class="step-body">
+    <p class="desc">한 단계 더! <strong>8분을 16분으로 쪼개면</strong> 화려하고 에너지 넘치는 반주.<br>찬양이 절정에 달할 때, 마지막 후렴 반복 때 사용하세요.</p>
+    <div class="vs-label">▼ 8분음표</div>
+    <div class="notation-container" id="n_rhythm2a"></div>
+    <div class="vs-label">▼ 16분음표로 쪼개기 (클라이맥스!)</div>
+    <div class="notation-container" id="n_rhythm2b"></div>
+    <div class="tip warning">속도 욕심 NO! ♩=60부터 정확하게 → 서서히 올리세요.</div>
+    <span class="ccm-tag">🎵 살아 계신 주</span>
+    <span class="ccm-tag">🎵 선한 목자 되신 우리 주</span>
+  </div>
+</div>
+
+<div class="step bg-deep">
+  <div class="step-header">
+    <div class="step-num">7</div>
+    실전 활용 — 한 곡 안에서 리듬 변화 주기
+  </div>
+  <div class="step-body">
+    <p class="desc">한 곡 안에서 <strong>파트별로 리듬을 다르게</strong> 쪼개면 프로 반주처럼 들립니다!<br><strong>인트로(4분) → 절(8분) → 후렴(8분+경과음) → 클라이맥스(16분)</strong></p>
+    <div class="vs-label">▼ 인트로/절: 4분 아르페지오 (잔잔하게)</div>
+    <div class="notation-container" id="n_rhythm3a"></div>
+    <div class="vs-label">▼ 후렴: 8분 + 베이스 경과음 (풍성하게)</div>
+    <div class="notation-container" id="n_rhythm3b"></div>
+    <div class="vs-label">▼ 클라이맥스: 16분 (화려하게!)</div>
+    <div class="notation-container" id="n_rhythm3c"></div>
+    <div class="tip">같은 코드 진행이어도 리듬만 바꾸면 완전히 다른 분위기! 이게 반주의 핵심이에요. 🎉</div>
+    <span class="ccm-tag">🎵 하나님의 은혜</span>
+    <span class="ccm-tag">🎵 주 안에서</span>
+  </div>
+</div>
+
+<!-- ======== PART 4: 6/8 박자 ======== -->
+<div class="section-title"><span class="emoji">🎶</span> PART 4 — 6/8박자 반주법</div>
+
+<div class="step bg-purple">
+  <div class="step-header">
+    <div class="step-num">8</div>
     6/8박자 기본 아르페지오 — 물결치는 느낌
   </div>
   <div class="step-body">
@@ -164,10 +216,9 @@
   </div>
 </div>
 
-<!-- Step 3 -->
-<div class="step bg-purple">
+<div class="step bg-blue">
   <div class="step-header">
-    <div class="step-num">3</div>
+    <div class="step-num">9</div>
     6/8박자 옥타브 아르페지오 — 풍성한 울림
   </div>
   <div class="step-body">
@@ -179,15 +230,13 @@
   </div>
 </div>
 
-<!-- Step 4 -->
-<div class="step bg-orange">
+<div class="step bg-green">
   <div class="step-header">
-    <div class="step-num">4</div>
-    6/8박자 리듬 변형 — 베이스+아르페지오
+    <div class="step-num">10</div>
+    6/8박자 베이스+아르페지오 — 안정감 있는 반주
   </div>
   <div class="step-body">
-    <p class="desc"><strong>첫 박에 베이스 음을 깊게</strong> 치고, 나머지를 아르페지오로 채우는 패턴.<br>왼손 베이스가 안정감을, 오른쪽 아르페지오가 흐름을 만듭니다.</p>
-    <div class="vs-label">▼ 베이스 + 아르페지오 분리</div>
+    <p class="desc"><strong>첫 박에 베이스 음을 깊게</strong> 치고, 나머지를 아르페지오로 채우는 패턴.</p>
     <div class="notation-container" id="n12"></div>
     <div class="tip">왼손 베이스(1,4번째 8분)는 강하게, 나머지는 부드럽게!</div>
     <span class="ccm-tag">🎵 은혜 아니면</span>
@@ -195,10 +244,9 @@
   </div>
 </div>
 
-<!-- Step 5 -->
-<div class="step bg-green">
+<div class="step bg-orange">
   <div class="step-header">
-    <div class="step-num">5</div>
+    <div class="step-num">11</div>
     6/8박자 종합 실전 — CCM 한 곡 완성
   </div>
   <div class="step-body">
@@ -218,17 +266,12 @@
 
 <script>
 const opts = {
-  staffwidth: 750,
-  scale: 1.1,
-  paddingtop: 10,
-  paddingbottom: 0,
-  paddingleft: 10,
-  paddingright: 10,
-  responsive: 'resize',
-  add_classes: true
+  staffwidth: 750, scale: 1.1,
+  paddingtop: 10, paddingbottom: 0, paddingleft: 10, paddingright: 10,
+  responsive: 'resize', add_classes: true
 };
 
-// Step 1: Basic C arpeggio
+// === PART 1 ===
 ABCJS.renderAbc("n1", `X:1
 M:4/4
 L:1/8
@@ -236,7 +279,100 @@ K:C clef=bass
 "C"C,E,G,C CG,E,C, | "C"C,E,G,C CG,E,C, |]
 `, opts);
 
-// Step 2: 6/8 basic
+// === PART 2: 베이스 경과음 ===
+
+// 2a: 경과음 없이
+ABCJS.renderAbc("n_pass1a", `X:1
+M:4/4
+L:1/4
+K:C clef=bass
+"C"[C,E,G,]4 | "Am"[A,,C,E,]4 |]
+`, opts);
+
+// 2b: 경과음 적용 C → C/B → Am
+ABCJS.renderAbc("n_pass1b", `X:1
+M:4/4
+L:1/8
+K:C clef=bass
+"C"C,E,G,C CG,E,C, | "C/B"B,,E,G,C CG,E,B,, | "Am"A,,C,E,A, E,C,A,,z |]
+`, opts);
+
+// 3: 상행 Am → Am/B → C
+ABCJS.renderAbc("n_pass2", `X:1
+M:4/4
+L:1/8
+K:C clef=bass
+"Am"A,,C,E,A, E,C,A,,z | "Am/B"B,,C,E,A, E,C,B,,z | "C"C,E,G,C CG,E,C, |]
+`, opts);
+
+// 4: 종합 하행 베이스 라인
+ABCJS.renderAbc("n_pass3", `X:1
+M:4/4
+L:1/8
+K:C clef=bass
+"C"C,E,G,C CG,E,C, | "C/B"B,,E,G,C CG,E,B,, | "Am"A,,C,E,A, E,C,A,,z | "Am/G"G,,C,E,A, E,C,G,,z |
+"F"F,,A,,C,F, C,A,,F,,z | "G"G,,B,,D,G, D,B,,G,,z | "C"C,E,G,C CG,E,C, |]
+`, opts);
+
+// === PART 3: 리듬 쪼개기 ===
+
+// 5a: 4분음표
+ABCJS.renderAbc("n_rhythm1a", `X:1
+M:4/4
+L:1/4
+K:C clef=bass
+"C"C,E,G,C | "Am"A,,C,E,A, | "F"F,,A,,C,F, | "G"G,,B,,D,G, |]
+`, opts);
+
+// 5b: 8분음표로 쪼개기
+ABCJS.renderAbc("n_rhythm1b", `X:1
+M:4/4
+L:1/8
+K:C clef=bass
+"C"C,G,CE CG,CE | "Am"A,,E,A,C A,E,A,C | "F"F,,C,F,A, F,C,F,A, | "G"G,,D,G,B, G,D,G,B, |]
+`, opts);
+
+// 6a: 8분음표
+ABCJS.renderAbc("n_rhythm2a", `X:1
+M:4/4
+L:1/8
+K:C clef=bass
+"C"C,G,CE CG,CE |]
+`, opts);
+
+// 6b: 16분음표로 쪼개기
+ABCJS.renderAbc("n_rhythm2b", `X:1
+M:4/4
+L:1/16
+K:C clef=bass
+"C"C,E,G,C E,G,CE CG,CE G,CE,G, |]
+`, opts);
+
+// 7a: 인트로 4분
+ABCJS.renderAbc("n_rhythm3a", `X:1
+M:4/4
+L:1/4
+K:C clef=bass
+"C"C,E,G,C | "Am"A,,C,E,A, |]
+`, opts);
+
+// 7b: 후렴 8분 + 경과음
+ABCJS.renderAbc("n_rhythm3b", `X:1
+M:4/4
+L:1/8
+K:C clef=bass
+"C"C,G,CE CG,CE | "C/B"B,,G,CE CG,EB,, | "Am"A,,E,A,C A,E,A,C | "Am/G"G,,E,A,C A,E,G,,z |]
+`, opts);
+
+// 7c: 클라이맥스 16분
+ABCJS.renderAbc("n_rhythm3c", `X:1
+M:4/4
+L:1/16
+K:C clef=bass
+"C"C,E,G,C E,G,CE CG,CE G,CE,G, | "Am"A,,C,E,A, C,E,A,C E,A,CE A,C,E,A, |]
+`, opts);
+
+// === PART 4: 6/8 ===
 ABCJS.renderAbc("n10", `X:1
 M:6/8
 L:1/8
@@ -244,7 +380,6 @@ K:C clef=bass
 "C"C,E,G, C,E,G, | "Am"A,,C,E, A,,C,E, | "F"F,,A,,C, F,,A,,C, | "G"G,,B,,D, G,,B,,D, |]
 `, opts);
 
-// Step 3: 6/8 octave
 ABCJS.renderAbc("n11", `X:1
 M:6/8
 L:1/8
@@ -252,7 +387,6 @@ K:C clef=bass
 "C"C,G,C EG,C | "Am"A,,E,A, CE,A, | "F"F,,C,F, A,C,F, | "G"G,,D,G, B,D,G, |]
 `, opts);
 
-// Step 4: 6/8 bass + arpeggio
 ABCJS.renderAbc("n12", `X:1
 M:6/8
 L:1/8
@@ -260,7 +394,6 @@ K:C clef=bass
 "C"C,2E, G,CE | "Am"A,,2C, E,A,C | "F"F,,2A,, C,F,A, | "G"G,,2B,, D,G,B, |]
 `, opts);
 
-// Step 5: 6/8 full progression
 ABCJS.renderAbc("n13", `X:1
 M:6/8
 L:1/8
